@@ -5,7 +5,6 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
-    ('David Delassus', 'david.jose.delassus@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -44,7 +43,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-ROOT = '/home/linkdd/Documents/project/pompadour-wiki/pompadour_wiki'
+ROOT = ''
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -102,6 +101,32 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Social-Auth configuration
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.google.GoogleBackend',
+)
+
+GOOGLE_CONSUMER_KEY    = ''
+GOOGLE_CONSUMER_SECRET = ''
+
+SOCIAL_AUTH_COMPLETE_URL_NAME  = 'socialauth_complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
+SOCIAL_AUTH_EXTRA_DATA         = False
+SOCIAL_AUTH_EXPIRATION         = 'expires'
+SOCIAL_AUTH_RAISE_EXCEPTIONS   = DEBUG
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
+    'social_auth.context_processors.social_auth_by_type_backends',
+    'social_auth.context_processors.social_auth_login_redirect',
+)
+
 ROOT_URLCONF = 'pompadour_wiki.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -126,6 +151,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'social_auth',
 )
 
 # A sample logging configuration. The only tangible logging
