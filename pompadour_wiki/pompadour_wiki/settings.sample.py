@@ -101,31 +101,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-# Social-Auth configuration
-
 AUTHENTICATION_BACKENDS = (
+    'pompadour_wiki.auth.GoogleBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
 )
 
-GOOGLE_CONSUMER_KEY    = ''
-GOOGLE_CONSUMER_SECRET = ''
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/done'
+LOGOUT_URL = '/logout/'
 
-SOCIAL_AUTH_COMPLETE_URL_NAME  = 'socialauth_complete'
-SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
-SOCIAL_AUTH_EXTRA_DATA         = False
-SOCIAL_AUTH_EXPIRATION         = 'expires'
-SOCIAL_AUTH_RAISE_EXCEPTIONS   = DEBUG
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'social_auth.context_processors.social_auth_by_name_backends',
-    'social_auth.context_processors.social_auth_backends',
-    'social_auth.context_processors.social_auth_by_type_backends',
-    'social_auth.context_processors.social_auth_login_redirect',
-)
+OPENID_SSO_SERVER_URL = 'https://www.google.com/accounts/o8/id'
 
 ROOT_URLCONF = 'pompadour_wiki.urls'
 
@@ -151,7 +136,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'social_auth',
+    'googleprofile',
+    'django_openid_auth',
 )
 
 # A sample logging configuration. The only tangible logging
