@@ -3,7 +3,7 @@
 {% block content %}
     <ul>
         {% for p in pages %}
-            <li><a href="{{ p }}">{{ p }}</a></li>
+            <li><a href="/wiki/{{ wiki }}/{{ p }}">{{ p }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
