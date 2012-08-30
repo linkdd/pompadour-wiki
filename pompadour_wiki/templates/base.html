@@ -1,0 +1,63 @@
+{% load staticfiles %}
+{% load url from future %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pompadour Wiki</title>
+        <meta charset="utf-8" />
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <script src="{% static  'bootstrap/js/bootstrap.min.js' %}" rel="stylesheet"></script>
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+            .sidebar-nav {
+                padding: 9px 0;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Topbar -->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="#">Pompadour Wiki</a>
+
+                    <div class="nav-collapse collapse">
+                        <p class="navbar-text pull-right">
+                            {% if user.is_authenticated %}
+                                Logged in as <a href="mailto:{{ user.email }}" class="navbar-link">{{ user.first_name }} {{ user.last_name }}</a> |
+                                <a href="/logout/">Logout</a>
+                            {% else %}
+                                <a href="/login/" class="navbar-link">Login</a>
+                            {% endif %}
+                        </p>
+
+                        <ul class="nav">
+                            {% for url in navbar %}
+                                {% if request.path == url.1 %}
+                                    <li class="active"><a href="{{ url.1 }}">{{ url.0 }}</a></li>
+                                {% else %}
+                                    <li><a href="{{ url.1 }}">{{ url.0 }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+    </body>
+</html>
+

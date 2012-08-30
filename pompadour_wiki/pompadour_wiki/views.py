@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 def home(request):
-    return HttpResponse('<a href="/login/">Login</a>')
+    data = {
+        'test': 'test',
+    }
 
-@login_required
-def done(request):
-    return HttpResponse('<h1>' + str(request.user.username) + '</h1>')
+    return render_to_response('home.html', data, context_instance=RequestContext(request))
