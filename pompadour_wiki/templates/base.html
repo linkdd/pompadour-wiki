@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Pompadour Wiki</title>
+        <title>{{ pompadour.title }}</title>
         <meta charset="utf-8" />
         <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
         <script src="{% static  'bootstrap/js/bootstrap.min.js' %}" rel="stylesheet"></script>
@@ -29,7 +29,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="#">Pompadour Wiki</a>
+                    <a class="brand" href="#">{{ pompadour.title }}</a>
 
                     <div class="nav-collapse collapse">
                         <p class="navbar-text pull-right">
@@ -42,7 +42,7 @@
                         </p>
 
                         <ul class="nav">
-                            {% for url in navbar %}
+                            {% for url in pompadour.navbar %}
                                 {% if request.path == url.1 %}
                                     <li class="active"><a href="{{ url.1 }}">{{ url.0 }}</a></li>
                                 {% else %}
