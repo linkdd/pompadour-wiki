@@ -1,4 +1,17 @@
 {% extends "base.html" %}
+{% load markup %}
 
 {% block content %}
+    {% for row in wikis %}
+        <div class="row-fluid">
+            {% for w in row %}
+                <div class="span4 wiki">
+                    <h3 id="{{ w.slug }}">{{ w.name }}</h3>
+
+                    <p><a href="/wiki/{{ w.slug }}">/wiki/{{ w.slug }}</a></p>
+                    <p>{{ w.description|markdown }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 {% endblock %}

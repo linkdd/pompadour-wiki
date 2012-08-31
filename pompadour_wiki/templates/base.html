@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load url from future %}
+{% load markup %}
 
 <!DOCTYPE html>
 <html>
@@ -15,6 +16,19 @@
             }
             .sidebar-nav {
                 padding: 9px 0;
+            }
+
+            .wiki {
+                padding: 5px;
+                background-color: #F5F5F5;
+
+                -webkit-border-radius: 4px;
+                   -moz-border-radius: 4px;
+                        border-radius: 4px;
+            }
+
+            .wiki:hover {
+                background-color: #E5E5E5;
             }
         </style>
     </head>
@@ -35,6 +49,9 @@
                         <p class="navbar-text pull-right">
                             {% if user.is_authenticated %}
                                 Logged in as <a href="mailto:{{ user.email }}" class="navbar-link">{{ user.first_name }} {{ user.last_name }}</a> |
+                                {% if user.is_staff %}
+                                    <a href="/admin/">Administration</a> |
+                                {% endif %}
                                 <a href="/logout/">Logout</a>
                             {% else %}
                                 <a href="/login/" class="navbar-link">Login</a>
@@ -55,8 +72,10 @@
             </div>
         </div>
 
-        {% block content %}
-        {% endblock %}
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
 
     </body>
 </html>

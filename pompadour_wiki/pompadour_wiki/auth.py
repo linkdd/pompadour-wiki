@@ -15,7 +15,7 @@ class GoogleBackend:
         google_lastname = openid_response.getSigned('http://openid.net/srv/ax/1.0', 'value.lastname')
 
         user, created = User.objects.get_or_create(email=google_email)
-        user.username = google_firstname.lower() + google_lastname.lower()
+        user.username = google_email
         user.email = google_email
         user.first_name = google_firstname
         user.last_name = google_lastname
