@@ -14,8 +14,9 @@ def page(request, wiki):
     path = request.path.split('/wiki/{0}/'.format(wiki))[1]
 
     # Remove trailing slashes
-    while path[-1] == '/':
-        path = path[:-1]
+    if path:
+        while path[-1] == '/':
+            path = path[:-1]
 
     if r.is_dir(path):
         data = {
