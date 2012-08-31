@@ -21,6 +21,16 @@ class Repository(object):
             else:
                 self.blobs.append(e)
 
+    def exists(self, path):
+        if path == self.repo_tree.path:
+            return True
+
+        for e in self.repo_tree.traverse():
+            if e.path == path:
+                return True
+
+        return False
+
     def is_dir(self, path):
         if path == self.repo_tree.path:
             return True

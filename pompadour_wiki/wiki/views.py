@@ -1,13 +1,16 @@
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 
 from wiki.models import Wiki
 from wiki.gitdb import Repository
 
 import markdown
+
+def markdown_url_builder(label, base, end):
+    return base + '/'.join(label.split('_')) + end
 
 @login_required
 def tree(request, wiki):
@@ -30,6 +33,9 @@ def page(request, wiki):
         while path[-1] == '/':
             path = path[:-1]
 
+    if not r.exists(path):
+        raise Http404
+
     if r.is_dir(path):
         pages, name = r.get_tree(path)
         data = {
@@ -47,7 +53,8 @@ def page(request, wiki):
             extension_configs = {
                 'wikilinks': [
                     ('base_url', '/wiki/{0}/'.format(wiki)),
-                    ('end_url', '.md')
+                    ('end_url', '.md'),
+                    ('build_url', markdown_url_builder),
                 ]
             }
         )
