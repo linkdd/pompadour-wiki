@@ -31,7 +31,9 @@
             </div>
 
             <div class="span9">
-                <h1>{% firstof page_name wiki.name %}</h1>
+                <h1>{% firstof page_meta.title.0 page_name wiki.name %}</h1>
+
+                <hr/>
 
                 {% block wiki_page %}
                 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "wiki.html" %}
+{% load markup %}
 
 {% block wiki_page %}
-    <pre>{{ page_content }}</pre>
+    {{ page_content|safe }}
 {% endblock %}

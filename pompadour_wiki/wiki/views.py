@@ -7,6 +7,8 @@ from django.core.urlresolvers import reverse
 from wiki.models import Wiki
 from wiki.gitdb import Repository
 
+import markdown
+
 @login_required
 def tree(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
@@ -40,10 +42,23 @@ def page(request, wiki):
         return render_to_response('pages.html', data, context_instance=RequestContext(request))
 
     else:
+        md = markdown.Markdown(
+            extensions = [ 'meta', 'wikilinks', 'codehilite'],
+            extension_configs = {
+                'wikilinks': [
+                    ('base_url', '/wiki/{0}/'.format(wiki)),
+                    ('end_url', '.md')
+                ]
+            }
+        )
         content, name = r.get_content(path)
+
+        page_content = md.convert(content)
+
         data = {
             'menu_url': reverse('tree', args=[wiki]),
-            'page_content': content,
+            'page_content': page_content,
+            'page_meta': md.Meta,
             'page_name': name,
             'wiki': w,
         }
