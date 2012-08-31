@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^tree/(?P<wiki>[^/]+)/$', 'wiki.views.tree', name='tree'),
     url(r'^wiki/(?P<wiki>[^/]+)/', 'wiki.views.page', name='page'),
 )
 

@@ -1,5 +1,6 @@
 from git import *
 from git.exc import InvalidGitRepositoryError
+import simplejson
 
 class Repository(object):
     """ Repository object """
@@ -33,7 +34,7 @@ class Repository(object):
     def get_content(self, path):
         for blob in self.blobs:
             if blob.path == path:
-                return blob.data_stream.read()
+                return blob.data_stream.read(), blob.name
 
     def get_tree(self, path):
         for tree in self.trees:
@@ -43,4 +44,59 @@ class Repository(object):
                 ret = ret + [b.path for b in tree.blobs]
                 ret = ret + [t.path + '/' for t in tree.trees]
 
-                return ret
+                return ret, tree.name
+
+    def get_json_tree(self):
+
+        json = {'node': {
+            'name': '/',
+            'path': '/',
+            'type': 'tree',
+            'children': []
+        }}
+
+        # Get all paths from the repository
+        for e in self.repo_tree.traverse():
+            spath = e.path.split('/')
+
+            node = json['node']
+
+            # Build tree before inserting node
+            for d in spath[:-1]:
+                new_node = {'node': {
+                    'name': d,
+                    'path': e.path,
+                    'type': 'tree',
+                    'children': []
+                }}
+
+                # Search if the node is already in the tree
+                for n in node['children']:
+                    if d == n['node']['name']:
+                        new_node = n
+                        break
+                else: # if not, just add it
+                    node['children'].append(new_node)
+
+                # Up level
+                node = new_node['node']
+
+            if type(e) is Tree:
+                new_node = {'node': {
+                    'name': e.name,
+                    'path': e.path,
+                    'type': 'tree',
+                    'children': []
+                }}
+
+                node['children'].append(new_node)
+            else:
+                new_node = {'node': {
+                    'name': e.name,
+                    'path': e.path,
+                    'type': 'file'
+                }}
+
+                node['children'].append(new_node)
+
+        return simplejson.dumps(json)

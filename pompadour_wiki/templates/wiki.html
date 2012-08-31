@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block wiki_script %}
+    <script src="{% static 'wiki-tree.js' %}"></script>
+
+    <script>
+        $(function ()
+        {
+            $.getJSON('{{ menu_url }}', function(json)
+            {
+                buildtree($('#wiki-menu'), json, '{{ wiki.slug }}');
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="well sidebar-nav sidebar-nav-fixed">
+                    <ul class="nav nav-list">
+                        <li class="nav-header">
+                            <i class="icon-folder-open" style="float: left;"></i>
+                            <a href="/wiki/{{ wiki.slug }}">{{ wiki.name }}</a>
+                        </li>
+                        <ul class="nav nav-list" id="wiki-menu"></ul>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="span9">
+                <h1>{% firstof page_name wiki.name %}</h1>
+
+                {% block wiki_page %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

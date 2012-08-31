@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "wiki.html" %}
 
-{% block content %}
+{% block wiki_page %}
     <ul>
         {% for p in pages %}
-            <li><a href="/wiki/{{ wiki }}/{{ p }}">{{ p }}</a></li>
+            <li><a href="/wiki/{{ wiki.slug }}/{{ p }}">{{ p }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
