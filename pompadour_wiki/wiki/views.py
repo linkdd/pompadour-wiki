@@ -1,40 +1,79 @@
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 
+from wiki.forms import EditPageForm
 from wiki.models import Wiki
-from wiki.gitdb import Repository
+from wiki.git_db import Repository
 
 import markdown
 
-def markdown_url_builder(label, base, end):
+def _markdown_url_builder(label, base, end):
     return base + '/'.join(label.split('_')) + end
+
+def _git_path(request, wiki):
+    path = request.path.split('/{0}/'.format(wiki))[1]
+
+    # Remove slashes
+    if path:
+        while path[0] == '/':
+            path = path[1:]
+
+        while path[-1] == '/':
+            path = path[:-1]
+
+    return path
 
 @login_required
 def tree(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
-
     r = Repository(w.gitdir)
-
     return HttpResponse(r.get_json_tree())
+
+@login_required
+def edit(request, wiki):
+    w = get_object_or_404(Wiki, slug=wiki)
+    r = Repository(w.gitdir)
+    path = _git_path(request, wiki)
+
+    page_name = path
+
+    if request.method == 'POST':
+        form = EditPageForm(request.POST)
+
+        if form.is_valid():
+            r.set_content(path, form.cleaned_data['content'])
+
+            return redirect('{0}/{1}'.format(reverse('page', args=[wiki]), path))
+    else:
+        if r.exists(path):
+            content, page_name = r.get_content(path)
+            form = EditPageForm({'content': content})
+        else:
+            form = EditPageForm()
+
+    data = {
+        'menu_url': reverse('tree', args=[wiki]),
+        'page_name': 'Edit: {0}'.format(page_name),
+        'edit_path': path,
+        'wiki': w,
+        'form': form
+    }
+
+    return render_to_response('edit.html', data, context_instance=RequestContext(request))
+
 
 @login_required
 def page(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
-
     r = Repository(w.gitdir)
+    path = _git_path(request, wiki)
 
-    path = request.path.split('/wiki/{0}/'.format(wiki))[1]
-
-    # Remove trailing slashes
-    if path:
-        while path[-1] == '/':
-            path = path[:-1]
-
+    # If the page doesn't exist, redirect user to an edit page
     if not r.exists(path):
-        raise Http404
+        return redirect('{0}/{1}'.format(reverse('edit', args=[wiki]), path))
 
     if r.is_dir(path):
         pages, name = r.get_tree(path)
@@ -49,24 +88,28 @@ def page(request, wiki):
 
     else:
         md = markdown.Markdown(
-            extensions = [ 'meta', 'wikilinks', 'codehilite'],
+            extensions = ['meta', 'wikilinks', 'codehilite'],
             extension_configs = {
                 'wikilinks': [
                     ('base_url', '/wiki/{0}/'.format(wiki)),
                     ('end_url', '.md'),
-                    ('build_url', markdown_url_builder),
-                ]
-            }
+                    ('build_url', _markdown_url_builder),
+                ],
+                'codehilite': [
+                ],
+            },
+            safe_mode = True
         )
         content, name = r.get_content(path)
 
-        page_content = md.convert(content)
+        page_content = md.convert(content.decode('utf-8'))
 
         data = {
             'menu_url': reverse('tree', args=[wiki]),
             'page_content': page_content,
             'page_meta': md.Meta,
             'page_name': name,
+            'edit_url': '/edit/'.join(request.path.split('/wiki/')),
             'wiki': w,
         }
 

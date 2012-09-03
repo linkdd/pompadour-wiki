@@ -31,6 +31,10 @@
             </div>
 
             <div class="span9">
+                {% if edit_url %}
+                    <div class="edit"><a href="{{ edit_url }}">edit</a></div>
+                {% endif %}
+
                 <h1>{% firstof page_meta.title.0 page_name wiki.name %}</h1>
 
                 <hr/>

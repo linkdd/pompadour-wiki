@@ -2,5 +2,5 @@
 {% load markup %}
 
 {% block wiki_page %}
-    {{ page_content|safe }}
+    {{ page_content|safe|urlize }}
 {% endblock %}

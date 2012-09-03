@@ -1,3 +1,5 @@
+from StringIO import StringIO
+from gitdb import IStream
 from git import *
 from git.exc import InvalidGitRepositoryError
 import simplejson
@@ -6,11 +8,16 @@ class Repository(object):
     """ Repository object """
 
     def __init__(self, gitdir):
+        """ Initialize repository """
+
         try:
             self.repo = Repo(gitdir)
         except InvalidGitRepositoryError:
             pass
 
+        self._parse()
+
+    def _parse(self):
         self.repo_tree = self.repo.heads.master.commit.tree
         self.blobs = []
         self.trees = [self.repo_tree]
@@ -22,6 +29,8 @@ class Repository(object):
                 self.blobs.append(e)
 
     def exists(self, path):
+        """ Check if path exists in repository """
+
         if path == self.repo_tree.path:
             return True
 
@@ -32,6 +41,8 @@ class Repository(object):
         return False
 
     def is_dir(self, path):
+        """ Check if path is a directory """
+
         if path == self.repo_tree.path:
             return True
 
@@ -41,12 +52,39 @@ class Repository(object):
 
         return False
 
+    def set_content(self, path, content):
+        """ Add new content in `path` """
+
+        # Create the stream
+        stream = StringIO(content.encode('utf-8'))
+        stream.seek(0, 2)
+        streamlen = stream.tell()
+        stream.seek(0)
+
+        istream = IStream("blob", streamlen, stream)
+
+        # Add it to the repository object database
+        self.repo.odb.store(istream)
+
+        # Create the corresponding blob object
+        blob = Blob(self.repo, istream.binsha, 0100644, path)
+
+        # Commit
+        self.repo.index.add([IndexEntry.from_blob(blob)])
+        self.repo.index.commit('Update Wiki: {0}'.format(path))
+
+        # Update internal informations
+        self._parse()
+
     def get_content(self, path):
+        """ Get content of file stored in `path` """
         for blob in self.blobs:
             if blob.path == path:
                 return blob.data_stream.read(), blob.name
 
     def get_tree(self, path):
+        """ Get list of files contained in `path` """
+
         for tree in self.trees:
             if tree.path == path:
                 ret = []
@@ -57,6 +95,7 @@ class Repository(object):
                 return ret, tree.name
 
     def get_json_tree(self):
+        """ Get full tree of repository as json """
 
         json = {'node': {
             'name': '/',
