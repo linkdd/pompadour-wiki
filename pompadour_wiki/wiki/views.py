@@ -17,12 +17,11 @@ def _git_path(request, wiki):
     path = request.path.split('/{0}/'.format(wiki))[1]
 
     # Remove slashes
-    if path:
-        while path[0] == '/':
-            path = path[1:]
+    while path and path[0] == '/':
+        path = path[1:]
 
-        while path[-1] == '/':
-            path = path[:-1]
+    while path and path[-1] == '/':
+        path = path[:-1]
 
     return path
 
@@ -31,6 +30,12 @@ def tree(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
     r = Repository(w.gitdir)
     return HttpResponse(r.get_json_tree())
+
+@login_required
+def diff(request, wiki):
+    w = get_object_or_404(Wiki, slug=wiki)
+    r = Repository(w.gitdir)
+    return HttpResponse(r.get_history())
 
 @login_required
 def edit(request, wiki):
@@ -44,13 +49,13 @@ def edit(request, wiki):
         form = EditPageForm(request.POST)
 
         if form.is_valid():
-            r.set_content(path, form.cleaned_data['content'])
+            r.set_content(form.cleaned_data['path'], form.cleaned_data['content'])
 
             return redirect('{0}/{1}'.format(reverse('page', args=[wiki]), path))
     else:
-        if r.exists(path):
+        if r.exists(path) and not r.is_dir(path):
             content, page_name = r.get_content(path)
-            form = EditPageForm({'content': content})
+            form = EditPageForm({'path': path, 'content': content})
         else:
             form = EditPageForm()
 
@@ -88,7 +93,7 @@ def page(request, wiki):
 
     else:
         md = markdown.Markdown(
-            extensions = ['meta', 'wikilinks', 'codehilite'],
+            extensions = ['meta', 'wikilinks', 'codehilite', 'toc'],
             extension_configs = {
                 'wikilinks': [
                     ('base_url', '/wiki/{0}/'.format(wiki)),

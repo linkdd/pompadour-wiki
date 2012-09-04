@@ -3,6 +3,7 @@
 
 {% block wiki_script %}
     <script src="{% static 'wiki-tree.js' %}"></script>
+    <script src="{% static 'wiki-diff.js' %}"></script>
 
     <script>
         $(function ()
@@ -10,6 +11,23 @@
             $.getJSON('{{ menu_url }}', function(json)
             {
                 buildtree($('#wiki-menu'), json, '{{ wiki.slug }}');
+            });
+
+            $.getJSON('/diff/{{ wiki.slug }}', function(json)
+            {
+                builddiff($('#history'), json);
+            });
+
+            $('#open-diff').click(function()
+            {
+                $('#wiki_page').hide('slow');
+                $('#wiki_diff').show('slow');
+            });
+
+            $('#close-diff').click(function()
+            {
+                $('#wiki_diff').hide('slow');
+                $('#wiki_page').show('slow');
             });
         });
     </script>
@@ -21,6 +39,7 @@
             <div class="span3">
                 <div class="well sidebar-nav sidebar-nav-fixed">
                     <ul class="nav nav-list">
+                        <li><a href="/edit/{{ wiki.slug }}"><i class="icon-plus-sign"></i> Add page</a>
                         <li class="nav-header">
                             <i class="icon-folder-open" style="float: left;"></i>
                             <a href="/wiki/{{ wiki.slug }}">{{ wiki.name }}</a>
@@ -31,16 +50,40 @@
             </div>
 
             <div class="span9">
-                {% if edit_url %}
-                    <div class="edit"><a href="{{ edit_url }}">edit</a></div>
-                {% endif %}
+                    <div class="right">
+                        <p><a href="#" id="open-diff"><i class="icon-list-alt"></i> history</a></p>
+
+                        {% if edit_url %}
+                            <p><a href="{{ edit_url }}"><i class="icon-edit"></i> edit</a></p>
+                        {% endif %}
+                    </div>
 
                 <h1>{% firstof page_meta.title.0 page_name wiki.name %}</h1>
 
                 <hr/>
 
-                {% block wiki_page %}
-                {% endblock %}
+                <div id="wiki_page">
+                    {% block wiki_page %}
+                    {% endblock %}
+                </div>
+
+                <div id="wiki_diff" class="hide">
+                    <h3>{{wiki.name }} history</h3>
+
+                    <table class="table table-stripped table-bordered table-hover">
+                        <thead>
+                            <tr><th>Message</th><th>Author</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="history">
+                        </tbody>
+                    </table>
+
+                    <p style="text-align: right;"><a href="#" class="btn" id="close-diff">Close</a></p>
+
+                    <hr/>
+
+                    <pre class="hide codehilite" id="diff"></pre>
+                </div>
             </div>
         </div>
     </div>

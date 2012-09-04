@@ -18,7 +18,7 @@ class Repository(object):
         self._parse()
 
     def _parse(self):
-        self.repo_tree = self.repo.heads.master.commit.tree
+        self.repo_tree = self.repo.head.commit.tree
         self.blobs = []
         self.trees = [self.repo_tree]
 
@@ -89,8 +89,8 @@ class Repository(object):
             if tree.path == path:
                 ret = []
 
-                ret = ret + [b.path for b in tree.blobs]
-                ret = ret + [t.path + '/' for t in tree.trees]
+                ret = ret + [{'path': b.path, 'type': 'file'} for b in tree.blobs]
+                ret = ret + [{'path': t.path, 'type': 'tree'} for t in tree.trees]
 
                 return ret, tree.name
 
@@ -149,3 +149,18 @@ class Repository(object):
                 node['children'].append(new_node)
 
         return simplejson.dumps(json)
+
+    def get_history(self):
+        diffs = {'diffs': []}
+
+        c = self.repo.head.commit
+
+        while c.parents:
+            diff = {'msg': str(c.message), 'date': str(c.authored_date), 'author': str(c.author)}
+            diff['diff'] = self.repo.git.diff(c.parents[0].hexsha, c.hexsha)
+
+            diffs['diffs'].append(diff)
+
+            c = c.parents[0]
+
+        return simplejson.dumps(diffs)

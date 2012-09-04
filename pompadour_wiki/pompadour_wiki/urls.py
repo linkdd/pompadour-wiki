@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^tree/(?P<wiki>[^/]+)/$', 'wiki.views.tree', name='tree'),
+    url(r'^diff/(?P<wiki>[^/]+)/$', 'wiki.views.diff', name='diff'),
     url(r'^edit/(?P<wiki>[^/]+)/', 'wiki.views.edit', name='edit'),
     url(r'^wiki/(?P<wiki>[^/]+)/', 'wiki.views.page', name='page'),
 )

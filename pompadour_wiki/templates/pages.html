@@ -1,9 +1,18 @@
 {% extends "wiki.html" %}
 
 {% block wiki_page %}
-    <ul>
+    <ul class="nav nav-list">
         {% for p in pages %}
-            <li><a href="/wiki/{{ wiki.slug }}/{{ p }}">{{ p }}</a></li>
+            <li>
+                <a href="/wiki/{{ wiki.slug }}/{{ p.path }}">
+                    {% if p.type == 'file' %}
+                        <i class="icon-file"></i>
+                    {% else %}
+                        <i class="icon-folder-open"></i>
+                    {% endif %}
+                    {{ p.path }}
+                </a>
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}
