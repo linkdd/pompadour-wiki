@@ -6,11 +6,13 @@ function buildtree(root, json, wiki)
 
         if(node.node.type == 'tree')
         {
-            var icon_folder = $('<i/>', { 'class': 'icon-folder-close', 'style': 'float: left;' });
+            var icon_folder = $('<i/>', { 'class': 'icon-folder-close' });
 
             var name = $('<li/>', { 'class': 'nav-header' });
-            name.append(icon_folder);
-            name.append($('<a/>', {'href': '/wiki/' + wiki + '/' + node.node.path, 'text': node.node.name }));
+            var link = $('<a/>', {'href': '/wiki/' + wiki + '/' + node.node.path, 'text': node.node.name });
+
+            link.prepend(icon_folder);
+            name.append(link);
 
             root.append(name);
 
@@ -18,12 +20,20 @@ function buildtree(root, json, wiki)
             new_root.css('display', 'none');
             root.append(new_root);
 
+            link.click(function(e)
+            {
+                if(e.target.nodeName == 'I')
+                {
+                    e.preventDefault();
+                }
+            });
+
             icon_folder.click(function()
             {
-                var ul = $(this).parent().next();
+                var ul = $(this).parent().parent().next();
                 ul.toggle('slow');
 
-                if (ul.css('display') == 'none')
+                if ($(this).hasClass('icon-folder-open'))
                 {
                     $(this).removeClass('icon-folder-open');
                     $(this).addClass('icon-folder-close');
@@ -39,11 +49,13 @@ function buildtree(root, json, wiki)
         }
         else
         {
-            var icon_file = $('<i/>', { 'class': 'icon-file', 'style': 'float: left;' });
+            var icon_file = $('<i/>', { 'class': 'icon-file' });
 
             var name = $('<li/>');
-            name.append(icon_file);
-            name.append($('<a/>', {'href': '/wiki/' + wiki + '/' + node.node.path, 'text': node.node.name }));
+            var link = $('<a/>', {'href': '/wiki/' + wiki + '/' + node.node.path, 'text': node.node.name });
+
+            link.prepend(icon_file);
+            name.append(link);
             root.append(name);
         }
     }

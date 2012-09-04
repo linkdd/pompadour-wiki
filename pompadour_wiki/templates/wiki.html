@@ -39,7 +39,8 @@
             <div class="span3">
                 <div class="well sidebar-nav sidebar-nav-fixed">
                     <ul class="nav nav-list">
-                        <li><a href="/edit/{{ wiki.slug }}"><i class="icon-plus-sign"></i> Add page</a>
+                        <li><a href="/edit/{{ wiki.slug }}"><i class="icon-plus-sign"></i> Add page</a></li>
+                        <li class="divider"></li>
                         <li class="nav-header">
                             <i class="icon-folder-open" style="float: left;"></i>
                             <a href="/wiki/{{ wiki.slug }}">{{ wiki.name }}</a>
@@ -50,7 +51,7 @@
             </div>
 
             <div class="span9">
-                    <div class="right">
+                    <div class="pull-right">
                         <p><a href="#" id="open-diff"><i class="icon-list-alt"></i> history</a></p>
 
                         {% if edit_url %}
