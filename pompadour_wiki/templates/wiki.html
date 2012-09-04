@@ -43,7 +43,7 @@
                         <li class="divider"></li>
                         <li class="nav-header">
                             <i class="icon-folder-open" style="float: left;"></i>
-                            <a href="/wiki/{{ wiki.slug }}">{{ wiki.name }}</a>
+                            <a href="/wiki/{{ wiki.slug }}">{{ wiki.name|title }}</a>
                         </li>
                         <ul class="nav nav-list" id="wiki-menu"></ul>
                     </ul>
@@ -59,7 +59,7 @@
                         {% endif %}
                     </div>
 
-                <h1>{% firstof page_meta.title.0 page_name wiki.name %}</h1>
+                <h1>{% filter title %}{% firstof page_meta.title.0 page_name wiki.name %}{% endfilter %}</h1>
 
                 <hr/>
 
@@ -69,7 +69,7 @@
                 </div>
 
                 <div id="wiki_diff" class="hide">
-                    <h3>{{wiki.name }} history</h3>
+                    <h3>{{ wiki.name|title }} history</h3>
 
                     <table class="table table-stripped table-bordered table-hover">
                         <thead>
