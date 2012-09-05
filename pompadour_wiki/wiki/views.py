@@ -49,11 +49,8 @@ def edit(request, wiki):
     # Check if a lock exists
     try:
         lock = Lock.objects.get(path=request.path)
-    except Lock.DoesNotExist:
-        lock = None
 
-    # Check if the lock exists since more than 30 minutes
-    if lock:
+        # Check if the lock exists since more than 30 minutes
         dt = datetime.datetime.utcnow().replace(tzinfo=utc) - lock.timestamp
 
         if dt.total_seconds() >= 30*60:
@@ -65,7 +62,8 @@ def edit(request, wiki):
             lock.save()
         else:
             page_locked = True
-    else:
+
+    except Lock.DoesNotExist:
         lock = Lock()
         lock.path = request.path
         lock.user = request.user
@@ -97,11 +95,13 @@ def edit(request, wiki):
         'menu_url': reverse('tree', args=[wiki]),
         'page_name': 'Edit: {0}'.format(page_name),
         'page_locked': page_locked,
-        'lock': not page_locked and lock or None,
         'edit_path': path,
         'wiki': w,
         'form': form
     }
+
+    if page_locked:
+        data['lock'] = lock
 
     return render_to_response('edit.html', data, context_instance=RequestContext(request))
 
