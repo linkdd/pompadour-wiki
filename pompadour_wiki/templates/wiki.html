@@ -4,6 +4,7 @@
 {% block wiki_script %}
     <script src="{% static 'wiki-tree.js' %}"></script>
     <script src="{% static 'wiki-diff.js' %}"></script>
+    <script src="{% static 'ajax.js' %}"></script>
 
     <script>
         $(function ()
@@ -29,6 +30,22 @@
                 $('#wiki_diff').hide('slow');
                 $('#wiki_page').show('slow');
             });
+
+            {% if lock %}
+                $(window).bind('beforeunload', function()
+                {
+                    console.log('{{ lock.id }}');
+
+                    $.ajax({
+                        'url': '/lock/{{ lock.id }}/',
+                        'type': 'DELETE',
+                        'success': function(resp)
+                        {
+                            console.log(resp);
+                        }
+                    });
+                });
+            {% endif %}
         });
     </script>
 {% endblock %}
@@ -59,6 +76,15 @@
                 <h1>{% filter title %}{% firstof page_meta.title.0 page_name wiki.name %}{% endfilter %}</h1>
 
                 <hr/>
+
+                {% if page_locked %}
+                    <div class="alert">
+                        <span class="label label-warning">Warning</span> This page is being edited
+                        by <a href="mailto:{{ lock.user.email }}">{{ lock.user.first_name }} {{ lock.user.last_name }}</a>.
+                    </div>
+
+                    <hr/>
+                {% endif %}
 
                 <div id="wiki_page">
                     {% block wiki_page %}

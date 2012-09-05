@@ -8,6 +8,11 @@ from wiki.forms import EditPageForm
 from wiki.models import Wiki
 from wiki.git_db import Repository
 
+from lock.models import Lock
+
+from django.utils.timezone import utc
+import datetime
+
 import markdown
 
 def _markdown_url_builder(label, base, end):
@@ -39,6 +44,35 @@ def diff(request, wiki):
 
 @login_required
 def edit(request, wiki):
+    page_locked = False
+
+    # Check if a lock exists
+    try:
+        lock = Lock.objects.get(path=request.path)
+    except Lock.DoesNotExist:
+        lock = None
+
+    # Check if the lock exists since more than 30 minutes
+    if lock:
+        dt = datetime.datetime.utcnow().replace(tzinfo=utc) - lock.timestamp
+
+        if dt.total_seconds() >= 30*60:
+            # The lock has expired
+            # Reset it to the current user
+
+            lock.user = request.user
+            lock.timestamp = datetime.datetime.utcnow().replace(tzinfo=utc)
+            lock.save()
+        else:
+            page_locked = True
+    else:
+        lock = Lock()
+        lock.path = request.path
+        lock.user = request.user
+        lock.timestamp = datetime.datetime.utcnow().replace(tzinfo=utc)
+        lock.save()
+
+
     w = get_object_or_404(Wiki, slug=wiki)
     r = Repository(w.gitdir)
     path = _git_path(request, wiki)
@@ -62,6 +96,8 @@ def edit(request, wiki):
     data = {
         'menu_url': reverse('tree', args=[wiki]),
         'page_name': 'Edit: {0}'.format(page_name),
+        'page_locked': page_locked,
+        'lock': not page_locked and lock or None,
         'edit_path': path,
         'wiki': w,
         'form': form

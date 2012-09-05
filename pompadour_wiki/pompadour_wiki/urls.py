@@ -22,6 +22,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^lock/(?P<lock_id>(\d+))/$', 'lock.views.detail', name='lock'),
+
     url(r'^tree/(?P<wiki>[^/]+)/$', 'wiki.views.tree', name='tree'),
     url(r'^diff/(?P<wiki>[^/]+)/$', 'wiki.views.diff', name='diff'),
     url(r'^edit/(?P<wiki>[^/]+)/', 'wiki.views.edit', name='edit'),
