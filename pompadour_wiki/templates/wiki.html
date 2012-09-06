@@ -6,7 +6,7 @@
     <script src="{% static 'wiki-diff.js' %}"></script>
     <script src="{% static 'ajax.js' %}"></script>
 
-    <script>
+    <script type="text/javascript">
         $(function ()
         {
             $.getJSON('{{ menu_url }}', function(json)
@@ -48,6 +48,9 @@
             {% endif %}
         });
     </script>
+
+    {% block editor %}
+    {% endblock %}
 {% endblock %}
 
 {% block content %}

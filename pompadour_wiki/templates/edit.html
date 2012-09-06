@@ -1,7 +1,23 @@
 {% extends "wiki.html" %}
+{% load staticfiles %}
+
+{% block editor %}
+    <link rel="stylesheet" type="text/css" href="{% static 'markitup/skins/markitup/style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'markitup/sets/markdown/style.css' %}" />
+
+    <script type="text/javascript" src="{% static 'markitup/jquery.markitup.js' %}"></script>
+    <script type="text/javascript" src="{% static 'markitup/sets/markdown/set.js' %}"></script>
+
+    <script type="text/javascript">
+        $(function()
+        {
+            $('textarea').markItUp(mySettings);
+        });
+    </script>
+{% endblock %}
 
 {% block wiki_page %}
-    <form method="post" action="/edit/{{ wiki.slug }}/{{ edit_path }}">
+    <form method="post" action="/edit/{{ wiki.slug }}/{{ edit_path }}" class="editor">
         {% csrf_token %}
         {{ form.as_p }}
         <p><input type="submit" /></p>
