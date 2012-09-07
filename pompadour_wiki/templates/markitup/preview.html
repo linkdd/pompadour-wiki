@@ -1,0 +1,20 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Markdown preview</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'bootstrap/css/bootstrap-responsive.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'code.css' %}" rel="stylesheet" />
+
+        <script src="{% static 'jquery/jquery-1.8.1.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    </head>
+    <body>
+        {{ preview|safe|urlize }}
+    </body>
+</html>

@@ -22,6 +22,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    # MarkItUp
+    url(r'^markitup/', include('markitup.urls')),
+
     url(r'^lock/(?P<lock_id>(\d+))/$', 'lock.views.detail', name='lock'),
 
     url(r'^tree/(?P<wiki>[^/]+)/$', 'wiki.views.tree', name='tree'),
