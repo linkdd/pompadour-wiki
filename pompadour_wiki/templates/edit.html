@@ -1,4 +1,10 @@
 {% extends "wiki.html" %}
+{% load staticfiles %}
+{% load markitup_tags %}
+
+{% block markitup %}
+    {% markitup_media "no-jquery" %}
+{% endblock %}
 
 {% block wiki_page %}
     <form method="post" action="/edit/{{ wiki.slug }}/{{ edit_path }}">
