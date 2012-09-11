@@ -3,7 +3,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
 
-
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -11,6 +10,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'pompadour_wiki.views.home', name='home'),
+    url(r'^send/image/$', 'pompadour_wiki.views.post_img', name='post-image'),
+    url(r'^send/document/$', 'pompadour_wiki.views.post_doc', name='post-document'),
 
     url(r'^login/$', 'django_openid_auth.views.login_begin', name='openid-login'),
     url(r'^login-complete/$', 'django_openid_auth.views.login_complete', name='openid-complete'),

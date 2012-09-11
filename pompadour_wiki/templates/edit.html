@@ -1,15 +1,117 @@
 {% extends "wiki.html" %}
 {% load staticfiles %}
 {% load markitup_tags %}
+{% load url from future %}
 
 {% block markitup %}
     {% markitup_media "no-jquery" %}
+
+    <script src="{% static 'jquery/jquery.form.js' %}"></script>
+    <script src="{% static 'jquery/jquery.at.caret.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(function()
+        {
+            $('.file-upload').ajaxForm(function (res, statustxt, xhr, form)
+            {
+                var li = $('<li/>', {'text': res});
+                var icon = $('<i/>');
+                li.prepend(icon);
+
+                if (form.attr('id') == 'up-img')
+                {
+                    li.addClass('add-img');
+                    icon.addClass('icon-film');
+
+                    $('#imgs').append(li);
+                }
+                else
+                {
+                    li.addClass('add-doc');
+                    icon.addClass('icon-file');
+
+                    $('#docs').append(li);
+                }
+            });
+
+            $('.icon-ok-circle').click(function()
+            {
+                $(this).parent().submit();
+            });
+
+            $('.icon-film').click(function()
+            {
+                var a = $(this).parent().find('a');
+
+                $('#id_content').atCaret('insert', '![Image Not Found](' + a.text() + ' "title")');
+            });
+
+            $('.icon-file').click(function()
+            {
+                var a = $(this).parent().find('a');
+
+                $('#id_content').atCaret('insert', '[document](' + a.text() + ' "title")');
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block wiki_page %}
-    <form method="post" action="/edit/{{ wiki.slug }}/{{ edit_path }}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <p><input type="submit" /></p>
-    </form>
+    <div class="row-fluid">
+        <div class="span8">
+            <form method="post" action="/edit/{{ wiki.slug }}/{{ edit_path }}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p><input type="submit" /></p>
+            </form>
+        </div>
+
+        <div class="span4">
+            <ul class="list unstyled">
+                <li><i class="icon-plus-sign"></i> add an image</li>
+
+                <li>
+                    <form id="up-img" class="file-upload" method="post" action="{% url 'post-image' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <i class="icon-ok-circle"></i>
+                        <input type="hidden" name="page" value="{{ wiki.slug }}/{{ edit_path }}" />
+                        <input id="file" type="file" name="file" />
+                    </form>
+                </li>
+            </ul>
+
+            <ul class="list unstyled">
+                <li><i class="icon-plus-sign"></i> add a document</li>
+
+                <li>
+                    <form id="up-doc" class="file-upload" method="post" action="{% url 'post-document' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <i class="icon-ok-circle"></i>
+                        <input type="hidden" name="page" value="{{ wiki.slug }}/{{ edit_path }}" />
+                        <input id="file" type="file" name="file" />
+                    </form>
+                </li>
+            </ul>
+
+            <hr/>
+
+            <ul id="imgs" class="list unstyled">
+                <li>Attached images</li>
+
+                {% for img in attachements.images %}
+                    <li><i class="icon-film"></i> <a href="{{ img.path }}">{{ img.path }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <hr/>
+
+            <ul id="docs" class="list unstyled">
+                <li>Attached documents</li>
+
+                {% for doc in attachements.documents %}
+                    <li><i class="icon-file"></i> <a href="{{ doc.path }}">{{ doc.path }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}
