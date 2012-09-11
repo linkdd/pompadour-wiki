@@ -9,4 +9,11 @@ class Wiki(models.Model):
     def __str__(self):
         return self.name
 
-# Create your models here.
+class Document(models.Model):
+    path = models.CharField(max_length=512)
+    wikipath = models.CharField(max_length=512)
+    is_image = models.BooleanField()
+
+    def __str__(self):
+        return self.path
+

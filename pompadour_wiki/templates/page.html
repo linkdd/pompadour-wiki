@@ -2,5 +2,28 @@
 {% load markup %}
 
 {% block wiki_page %}
-    {{ page_content|safe|urlize }}
+    <div class="row-fluid">
+        <div class="span8">
+            {{ page_content|safe|urlize }}
+        </div>
+
+        <div class="span4">
+            <ul id="imgs" class="list unstyled">
+                <li>Attached images</li>
+
+                {% for img in attachements.images %}
+                    <li><i class="icon-film"></i> <a href="{{ img.path }}">{{ img.path }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <hr/>
+
+            <ul id="docs" class="list unstyled">
+                <li>Attached documents</li>
+
+                {% for doc in attachements.documents %}
+                    <li><i class="icon-file"></i> <a href="{{ doc.path }}">{{ doc.path }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
 {% endblock %}

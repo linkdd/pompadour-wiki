@@ -4,21 +4,20 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 
+from django.utils.timezone import utc
+
+import datetime
+import markdown
+
 from wiki.forms import EditPageForm
-from wiki.models import Wiki
+from wiki.models import Wiki, Document
 from wiki.git_db import Repository
 
 from lock.models import Lock
 
-from django.utils.timezone import utc
-import datetime
-
-import markdown
-
-def _markdown_url_builder(label, base, end):
-    return base + '/'.join(label.split('_')) + end
-
 def _git_path(request, wiki):
+    """ Get the path inside the git repository """
+
     path = request.path.split('/{0}/'.format(wiki))[1]
 
     # Remove slashes
@@ -32,18 +31,24 @@ def _git_path(request, wiki):
 
 @login_required
 def tree(request, wiki):
+    """ Return git tree """
+
     w = get_object_or_404(Wiki, slug=wiki)
     r = Repository(w.gitdir)
     return HttpResponse(r.get_json_tree())
 
 @login_required
 def diff(request, wiki):
+    """ Return git diff """
+
     w = get_object_or_404(Wiki, slug=wiki)
     r = Repository(w.gitdir)
     return HttpResponse(r.get_history())
 
 @login_required
 def edit(request, wiki):
+    """ Edit a page """
+
     page_locked = False
 
     # Check if a lock exists
@@ -95,9 +100,13 @@ def edit(request, wiki):
         'menu_url': reverse('tree', args=[wiki]),
         'page_name': 'Edit: {0}'.format(page_name),
         'page_locked': page_locked,
+        'attachements': {
+            'images': Document.objects.filter(is_image=True),
+            'documents': Document.objects.filter(is_image=False)
+        },
         'edit_path': path,
         'wiki': w,
-        'form': form
+        'form': form,
     }
 
     if page_locked:
@@ -134,7 +143,6 @@ def page(request, wiki):
                 'wikilinks': [
                     ('base_url', '/wiki/{0}/'.format(wiki)),
                     ('end_url', '.md'),
-                    ('build_url', _markdown_url_builder),
                 ],
                 'codehilite': [
                 ],
@@ -150,6 +158,10 @@ def page(request, wiki):
             'page_content': page_content,
             'page_meta': md.Meta,
             'page_name': name,
+            'attachements': {
+                'images': Document.objects.filter(is_image=True),
+                'documents': Document.objects.filter(is_image=False)
+            },
             'edit_url': '/edit/'.join(request.path.split('/wiki/')),
             'wiki': w,
         }
