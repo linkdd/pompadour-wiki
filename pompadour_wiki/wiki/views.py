@@ -96,13 +96,15 @@ def edit(request, wiki):
         else:
             form = EditPageForm()
 
+    docs = Document.objects.filter(wikipath='{0}/{1}'.format(wiki, path))
+
     data = {
         'menu_url': reverse('tree', args=[wiki]),
         'page_name': 'Edit: {0}'.format(page_name),
         'page_locked': page_locked,
         'attachements': {
-            'images': Document.objects.filter(is_image=True),
-            'documents': Document.objects.filter(is_image=False)
+            'images': docs.filter(is_image=True),
+            'documents': docs.filter(is_image=False)
         },
         'edit_path': path,
         'wiki': w,
@@ -153,14 +155,17 @@ def page(request, wiki):
 
         page_content = md.convert(content.decode('utf-8'))
 
+        print path
+        docs = Document.objects.filter(wikipath='{0}/{1}'.format(wiki, path))
+
         data = {
             'menu_url': reverse('tree', args=[wiki]),
             'page_content': page_content,
             'page_meta': md.Meta,
             'page_name': name,
             'attachements': {
-                'images': Document.objects.filter(is_image=True),
-                'documents': Document.objects.filter(is_image=False)
+                'images': docs.filter(is_image=True),
+                'documents': docs.filter(is_image=False)
             },
             'edit_url': '/edit/'.join(request.path.split('/wiki/')),
             'wiki': w,
