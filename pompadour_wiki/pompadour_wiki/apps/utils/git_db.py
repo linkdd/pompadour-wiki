@@ -79,6 +79,10 @@ class Repository(object):
         self.gitdir = gitdir
         self.parse()
 
+    @property
+    def git(self):
+        return self.repo.git
+
     def parse(self):
         """ Parse Tree and Blob objects. """
 
@@ -189,7 +193,7 @@ class Repository(object):
 
                 return ret
 
-    def get_history(self):
+    def get_history(self, start=None, end=None):
         """ Return repository's history. """
 
         diffs = {'diffs': []}
@@ -197,8 +201,13 @@ class Repository(object):
         c = self.repo.head.commit
 
         while c.parents:
-            diff = {'msg': c.message, 'date': datetime.fromtimestamp(c.authored_date), 'author': c.author}
-            diff['diff'] = self.repo.git.diff(c.parents[0].hexsha, c.hexsha)
+            diff = {
+                'msg': c.message,
+                'date': datetime.fromtimestamp(c.authored_date),
+                'author': c.author,
+                'parent_sha': c.parents[0].hexsha,
+                'sha': c.hexsha
+            }
 
             diffs['diffs'].append(diff)
 

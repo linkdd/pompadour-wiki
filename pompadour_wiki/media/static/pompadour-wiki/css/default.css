@@ -147,6 +147,10 @@ hr {
     padding-right: 20px;
 }
 
+.wiki-search {
+    text-align: center;
+}
+
 #edit-preview {
     border: 1px solid #CCCCCC;
     padding: 10px;

@@ -3,6 +3,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext
 from django.utils.timezone import utc
 from django.conf import settings
 
@@ -22,6 +23,8 @@ import markdown
 import datetime
 import os
 
+from collections import defaultdict
+
 @login_required
 @render_to('wiki/view.html')
 def view_page(request, wiki, path):
@@ -30,8 +33,6 @@ def view_page(request, wiki, path):
 
     if not path:
         return {'REDIRECT': urljoin(request.path, settings.WIKI_INDEX)}
-
-    print path
 
     # If path is a folder
     if r.is_dir(path):
@@ -176,3 +177,52 @@ def remove_page(request, wiki, path):
     Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)).delete()
 
     return wiki, ''
+
+@login_required
+@render_to('wiki/search.html')
+def search(request, wiki):
+    w = get_object_or_404(Wiki, slug=wiki)
+    r = Repository(w.gitdir)
+
+    results = []
+
+    if request.method == 'POST':
+        pattern = request.POST['pattern']
+
+        # Do the search
+        out = r.git.grep('-i', '--cached', pattern)
+
+        for line in out.splitlines():
+            # Exclude __media__
+            if not line.startswith('__media__'):
+                sep = line.find(':')
+
+                url = line[:sep]
+                match = line[sep + 1:]
+
+                # Remove markdown extension
+                if url.endswith('.md'):
+                    url = url[:url.rfind('.md')]
+
+                # Append to the results
+                results.append ((url, match))
+
+        # Group results
+        groups = defaultdict(list)
+
+        for result in results:
+            groups[result[0]].append(result[1])
+
+        results = groups.items()
+        print results
+
+    return {'wiki': {
+        'name': ugettext('Search'),
+        'history': r.get_history(),
+        'obj': w,
+        'results': results,
+        'urls': {
+            'edit': os.path.join(request.path, 'edit'),
+            'remove': os.path.join(request.path, 'remove'),
+        },
+    }}

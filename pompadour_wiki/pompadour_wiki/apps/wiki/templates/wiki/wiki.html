@@ -12,6 +12,17 @@
     <script type="application/javascript" src="{% static 'jquery/jquery.dataTables-bootstrap.js' %}"></script>
     <script type="application/javascript" src="{% static 'pompadour-wiki/js/wiki-view.js' %}"></script>
     <script type="application/javascript">
+        function show_diff(parent_sha, sha)
+        {
+            Dajaxice.pompadour_wiki.apps.wiki.show_diff(Dajax.process, {
+                'sha': sha,
+                'parent_sha': parent_sha,
+                'wiki': '{{ wiki.obj.slug }}'
+            });
+
+            return false;
+        }
+
         $(function()
         {
             Dajaxice.pompadour_wiki.apps.wiki.load_menu(Dajax.process, {'slug': '{{ wiki.obj.slug }}', 'path': '{{ wiki.path }}'});
@@ -64,6 +75,19 @@
         <!-- Wiki Side Menu -->
         <div class="span3 wiki-menu">
             <div class="sidebar-nav pompadour-noprint">
+                <div class="wiki-search">
+                    <form action="{% url search wiki.obj.slug %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-prepend input-append">
+                            <span class="add-on"><i class="icon-search"></i></span>
+                            <input type="text" name="pattern" placeholder="{% trans "Search" %}" />
+                            <button type="submit" class="btn">{% trans "Search" %}</button>
+                        </div>
+                    </form>
+                </div>
+
+                <hr/>
+
                 <ul class="treeview nav nav-list">
                     <li>
                         <a href="{% url edit-page wiki.obj.slug "new-page" %}">
@@ -158,7 +182,7 @@
                             {% for diff in wiki.history.diffs %}
                                 <tr>
                                     <td>{{ diff.msg }}</td><td>{{ diff.author }}</td><td>{{ diff.date|naturaltime }}</td>
-                                    <td><a href="#" onclick="Dajaxice.pompadour_wiki.apps.wiki.show_diff(Dajax.process, {'diff': '{{ diff.diff|escapejs }}'}); return false;"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
+                                    <td><a href="#" onclick="show_diff('{{ diff.parent_sha }}', '{{ diff.sha }}');"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
