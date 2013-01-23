@@ -1,0 +1,10 @@
+Django>=1.4
+ez-setup>=0.9
+django-openid-auth>=0.4
+django-dajax>=0.9
+django-dajaxice>=0.5
+Markdown>=2.2
+pygments>=1.4
+gitpython>=0.3
+python-openid>=2.2.5
+simplejson>=2.6.2

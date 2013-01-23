@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load markup %}
+
+{% block content %}
+    {% for wrow in wiki.array %}
+        <div class="row-fluid">
+            {% for w in wrow %}
+                <div class="span4 wiki">
+                    <div class="wiki-inner">
+                        <div class="wiki-header">
+                            <h4>
+                                <i class="icon-book"></i>
+                                <a href="{% url view-page w.slug "" %}">{{ w.name|title }}</a>
+                            </h4>
+                        </div>
+
+                        <div class="wiki-description">{{ w.description|markdown }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}

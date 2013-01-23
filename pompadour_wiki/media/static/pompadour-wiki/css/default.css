@@ -1,0 +1,256 @@
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #EEFFFF;
+}
+
+hr {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    width: 100%;
+    height: 1px;
+
+    color: #CCCCCC;
+    background-color: #CCCCCC;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.wiki {
+    padding: 10px;
+}
+
+.wiki .wiki-inner {
+    background-color: #F5F5F5;
+    border: 1px solid #CCCCCC;
+
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+}
+
+.wiki .wiki-inner:hover {
+    background-color: #E5E5E5;
+}
+
+.wiki .wiki-header {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.wiki .wiki-header a {
+    color: #A83838;
+}
+
+.wiki .wiki-description {
+    padding: 10px;
+}
+
+.wiki-container {
+    border: 1px solid #CCCCCC;
+    background-color: #FFFFFF;
+
+    width: 95%;
+    margin: auto;
+    margin-top: 20px;
+    padding: 0;
+
+    -webkit-border-radius: 7px;
+       -moz-border-radius: 7px;
+            border-radius: 7px;
+}
+
+@media (min-width: 768px) {
+    .wiki-container .wiki-row,
+    .wiki-container .wiki-row [class*="span"] {
+        margin: 0;
+    }
+
+    .wiki-container .wiki-row .span1 {
+        width: 8.34%;
+    }
+
+    .wiki-container .wiki-row .span2 {
+        width: 16.67%;
+    }
+
+    .wiki-container .wiki-row .span3 {
+        width: 25%;
+    }
+
+    .wiki-container .wiki-row .span4 {
+        width: 33.36%;
+    }
+
+    .wiki-container .wiki-row .span5 {
+        width: 41.64%;
+    }
+
+    .wiki-container .wiki-row .span6 {
+        width: 50%;
+    }
+
+    .wiki-container .wiki-row .span7 {
+        width: 58.36%;
+    }
+
+    .wiki-container .wiki-row .span8 {
+        width: 66.67%;
+    }
+
+    .wiki-container .wiki-row .span9 {
+        width: 75%;
+    }
+
+    .wiki-container .wiki-row .span10 {
+        width: 83.33%;
+    }
+
+    .wiki-container .wiki-row .span11 {
+        width: 91.67%;
+    }
+
+    .wiki-container .wiki-row .span12 {
+        width: 100%;
+    }
+
+    .wiki-container .wiki-pane {
+        border-left: 1px solid #CCCCCC;
+    }
+}
+
+.wiki-container .wiki-menu {
+    padding-top: 20px;
+}
+
+.wiki-container .wiki-pane .wiki-pane-header {
+    border-bottom: 1px solid #CCCCCC;
+    padding-left: 20px;
+    padding-right: 10px;
+
+    color: #A83838;
+}
+
+.wiki-container .wiki-pane .wiki-pane-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    overflow: auto;
+}
+
+.wiki-container .wiki-pane .wiki-pane-body .wiki-pane-content,
+.wiki-container .wiki-pane .wiki-pane-body .wiki-pane-diff {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#edit-preview {
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+
+    background-color: #EEEEEE;
+    background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+    background-image:         repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+}
+
+.treeview input + label + ul {
+    display: none;
+}
+
+.treeview input + label + ul li {
+    margin-left: 18px;
+}
+
+.treeview input:checked + label + ul {
+    display: block;
+}
+
+.treeview input {
+    position: absolute;
+    opacity: 0;
+}
+
+.treeview input:checked:not(:disabled) + label + ul {
+    display: block;
+}
+
+.treeview input:disabled + label {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.treeview label {
+    background: url("/static/pompadour-wiki/img/treeview-folder-open.png") no-repeat;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 22px;
+    color: #999999;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.treeview input:checked + label {
+    background: url("/static/pompadour-wiki/img/treeview-folder-close.png") no-repeat;
+}
+
+.treeview input + label i {
+    width: 16px;
+    background-position: -384px -120px; /* bootstrap::.icon-folder-close */
+}
+
+.treeview input:checked + label i {
+    background-position: -408px -120px; /* bootstrap::.icon-folder-open */
+}
+
+.treeview label:before {
+    content: "";
+    vertical-align: middle;
+    width: 16px;
+    margin: 0;
+    margin-left: 18px;
+}
+
+.filemanager-thumbnail {
+    max-width: 75px;
+}
+
+.filemanager-thumbnail p {
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.filemanager-thumbnail .filemanager-file {
+    margin-top: -14px;
+}
+
+.filemanager-thumbnail .filemanager-file form.filemanager-selected {
+    display: inline;
+    position: relative;
+    bottom: -14px;
+}
+
+@media print {
+    .pompadour-noprint {
+        display: none;
+    }
+
+    /* redfine our CSS class for the print media */
+
+    body,
+    .wiki-container .wiki-pane .wiki-pane-header, 
+    .wiki-container .wiki-pane .wiki-pane-body,
+    .wiki-container .wiki-pane .wiki-pane-body .wiki-pane-content,
+    .wiki-container .wiki-pane .wiki-pane-body .wiki-pane-diff {
+        padding: 0;
+    }
+
+    .wiki-container {
+        width: 100%;
+        border: 0;
+        margin: auto;
+    }
+
+}

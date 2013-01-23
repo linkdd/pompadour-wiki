@@ -1,0 +1,7 @@
+{% extends "wiki/wiki.html" %}
+{% load markup %}
+{% load i18n %}
+
+{% block wiki_body %}
+    {{ wiki.content|safe|urlize }}
+{% endblock %}

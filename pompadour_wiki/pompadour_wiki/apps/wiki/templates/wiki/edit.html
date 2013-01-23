@@ -1,0 +1,81 @@
+{% extends "wiki/wiki.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head2_js %}
+    <script type="application/javascript" src="{% static 'jquery/jquery.markdown-editor.js' %}"></script>
+    <script type="application/javascript">
+        $(function()
+        {
+            $('#form-edit').markdownize();
+        });
+    </script>
+{% endblock %}
+
+{% block wiki_body %}
+    <h1>{% trans "Edit page" %}</h1>
+    <hr/>
+
+    <form id="form-edit" class="form-horizontal" method="post">
+        {% csrf_token %}
+
+        <div class="control-group">
+            <label class="control-label" for="form-edit-path">
+                {% trans "Path" %}
+            </label>
+
+            <div class="controls">
+                <input class="input-block-level" id="form-edit-path" name="{{ wiki.form.path.name }}" type="text" value="{{ wiki.form.path.value }}" />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <a class="btn btn-mini markup markup-h1">H1</a>
+                <a class="btn btn-mini markup markup-h2">H2</a>
+                <a class="btn btn-mini markup markup-h3">H3</a>
+                <a class="btn btn-mini markup markup-h4">H4</a>
+                <a class="btn btn-mini markup markup-h5">H5</a>
+                <a class="btn btn-mini markup markup-h6">H6</a> |
+
+                <a class="btn btn-mini markup markup-bold"><i class="icon-bold"></i></a>
+                <a class="btn btn-mini markup markup-italic"><i class="icon-italic"></i></a> |
+
+                <a class="btn btn-mini markup markup-picture"><i class="icon-picture"></i></a>
+                <a class="btn btn-mini markup markup-link"><i class="icon-globe"></i></a> |
+
+                <a class="btn btn-mini markup markup-list" title="List"><i class="icon-list"></i></a>
+                <a class="btn btn-mini markup markup-nlist" title="Numbered list"><i class="icon-list-alt"></i></a> |
+
+                <a class="btn btn-mini markup markup-quote" title="Block Quote"><i class="icon-comment"></i></a>
+                <a class="btn btn-mini markup markup-code" title="Block Code"><i class="icon-tasks"></i></a>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <a class="btn" onclick="Dajaxice.pompadour_wiki.apps.wiki.edit_preview(Dajax.process, {'dform': $('#form-edit').serializeObject(), 'wiki': '{{ wiki.obj.slug }}'});">
+                    <i class="icon-eye-open"></i> Preview
+                </a>
+            </div>
+
+            <div class="controls">
+                <textarea class="input-block-level markup markup-content" rows="25" name="{{ wiki.form.content.name }}">{{ wiki.form.content.value }}</textarea>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <button class="btn btn-primary" type="submit"><i class="icon-ok icon-white"></i> {% trans "Save" %}</button>
+            </div>
+
+            <div class="controls">
+                <input class="input-block-level" type="text" name="{{ wiki.form.comment.name }}" placeholder="{% trans "Update comment" %}" />
+            </div>
+        </div>
+    </form>
+
+    <div id="edit-preview">
+        Preview
+    </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% if is_folder_item %}
+    <li>
+        <input type="checkbox" id="treeview-item-{{ itemid }}" {% if checked %}checked="checked"{% endif %} />
+        <label for="treeview-item-{{ itemid }}">
+            <i class="icon-folder-close"></i>
+            <a href="{% url view-page wiki.slug node.path %}">
+                {{ node.name|title }}
+            </a>
+        </label>
+        <ul class="nav nav-list">
+            {{ submenu_html|safe }}
+        </ul>
+    </li>
+{% else %}
+    <li>
+        <a href="{% url view-page wiki.slug node.path %}">
+            <i class="icon-file"></i>
+            {{ node.name|title }}
+        </a>
+    </li>
+{% endif %}

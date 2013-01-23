@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+    <div class="wiki-row row-fluid">
+        <div class="span3 wiki-menu">
+            <div class="sidebar-nav sidebar-nav-fixed pompadourwiki-noprint">
+                <a class="btn"><i class="icon-upload"></i> Upload</a>
+            </div>
+        </div>
+
+        <div class="span9 wiki-pane">
+            <div class="wiki-pane-body">
+                <div class="wiki-pane-content">
+                    <ul class="thumbnails">
+                        <li class="span3">
+                            <div class="thumbnail">
+                                <img src="{% static 'pompadour-wiki/img/treeview-folder-open.png' %}" alt="" />
+                                <h3>file name.png</h3>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+{% endblock %}
