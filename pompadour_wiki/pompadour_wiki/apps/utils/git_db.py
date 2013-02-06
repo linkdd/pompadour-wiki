@@ -15,6 +15,8 @@ from datetime import datetime
 
 import os
 
+from collections import defaultdict
+
 _hook = """#!/bin/sh
 cd ..
 env -i git reset --hard > /dev/null 2>&1
@@ -193,8 +195,21 @@ class Repository(object):
 
                 return ret
 
-    def get_history(self, start=None, end=None):
+    def get_file_history(self, path):
+        """ Get history for a file """
+
+        if not self.exists(path):
+            return []
+
+        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+
+    def get_history(self, limit=None):
         """ Return repository's history. """
+
+        if limit:
+            return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('-{0}'.format(10)).splitlines()]
+        
+        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log().splitlines()]
 
         diffs = {'diffs': []}
 
@@ -278,3 +293,41 @@ class Repository(object):
 
     def get_json_tree(self):
         return json.dumps(self.get_tree())
+
+    def search(self, pattern):
+        """ Search for a pattern inside the repository and returns the list of results. """
+
+        results = []
+
+        # Do the search
+        try:
+            out = self.git.grep('-i', '-I', '--cached', pattern)
+
+        except GitCommandError:
+            # No results found
+            return []
+
+        for line in out.splitlines():
+            # Exclude __media__
+            if not line.startswith('__media__'):
+                sep = line.find(':')
+
+                url = line[:sep]
+                match = line[sep + 1:]
+
+                # Remove markdown extension
+                if url.endswith('.md'):
+                    url = url[:url.rfind('.md')]
+
+                # Append to the results
+                results.append ((url, match))
+
+        # Group results
+        groups = defaultdict(list)
+
+        for result in results:
+            groups[result[0]].append(result[1])
+
+        results = groups.items()
+
+        return results

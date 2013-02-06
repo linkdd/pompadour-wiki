@@ -1,0 +1,89 @@
+@import "bootstrap.less";
+@import "responsive.less";
+
+@bordercol: #CCCCCC;
+@headercol: #A83838;
+
+body {
+    padding-bottom: 40px;
+    margin-top: 10px;
+}
+
+hr {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    width: 100%;
+    height: 1px;
+
+    color: @bordercol;
+    background-color: @bordercol;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.wiki {
+    @media (min-width: 801px) {
+        #grid .fluid .offset(2);
+        #grid .fluid .span(8);
+    }
+
+    @media (min-width: 1025px) {
+        #grid .fluid .offset(3);
+        #grid .fluid .span(6);
+    }
+}
+
+.wiki-header {
+    border-bottom: 1px solid @bordercol;
+    color: @headercol;
+    margin-bottom: 10px;
+}
+
+.wiki-list {
+    .label {
+        .opacity (85);
+    }
+
+    .wiki-info {
+        color: #777777;
+        font-style: italic;
+    }
+
+    li {
+        padding: 5px;
+
+        &:hover {
+            background-color: #EEEEEE;
+        }
+
+        &.search-match {
+            padding: 0px;
+        }
+    }
+}
+
+.wiki-box {
+    & {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-box-pack: start;
+        -webkit-box-align: start;
+    }
+}
+
+#edit-preview {
+    border: 1px solid @bordercol;
+    padding: 10px;
+
+    background-color: #EEEEEE;
+    background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+    background-image:         repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+}
+
+@media print {
+    .pompadour-noprint {
+        display: none;
+    }
+}

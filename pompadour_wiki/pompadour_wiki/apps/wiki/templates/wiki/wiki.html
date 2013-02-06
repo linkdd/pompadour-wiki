@@ -71,129 +71,62 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wiki-row row-fluid">
-        <!-- Wiki Side Menu -->
-        <div class="span3 wiki-menu">
-            <div class="sidebar-nav pompadour-noprint">
-                <div class="wiki-search">
-                    <form action="{% url search wiki.obj.slug %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-prepend input-append">
-                            <span class="add-on"><i class="icon-search"></i></span>
-                            <input type="text" name="pattern" placeholder="{% trans "Search" %}" />
-                            <button type="submit" class="btn">{% trans "Search" %}</button>
-                        </div>
-                    </form>
-                </div>
-
-                <hr/>
-
-                <ul class="treeview nav nav-list">
-                    <li>
-                        <a href="{% url edit-page wiki.obj.slug "new-page" %}">
-                            <i class="icon-plus-sign"></i> 
-                            {% trans "Add page" %}
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{% url filemanager-index wiki.obj.slug '' %}">
-                            <i class="icon-briefcase"></i>
-                            {% trans "Open file manager" %}
-                        </a>
-                    </li>
-
-                    <li class="divider"></li>
-
-                    <li>
-                        <input type="checkbox" checked="checked" id="treeview-item-0" />
-                        <label for="treeview-item-0">
-                            <i class="icon-folder-close"></i>
-                            <a href="{% url view-page wiki.obj.slug "" %}">
-                                {{ wiki.obj.name|title }}
-                            </a>
-                        </label>
-                        <ul class="nav nav-list" id="wiki-menu">
-                        </ul>
-                    </li>
-                </ul>
-
-                <hr/>
-
-                <ul class="wiki-attached-documents nav nav-list">
-                    <li class="nav-header">{% trans "Attached documents" %}</li>
-                    {% for doc in wiki.attachments %}
-                        <li>
-                            <button class="close" onclick="Dajaxice.pompadour_wiki.apps.filemanager.remove_attach(Dajax.process, {'attachment': {{ doc.id }}});">&times;</button>
-
-                            <a href="{% url filemanager-view wiki.obj.slug doc.file %}">
-                                <img width="16" height="16" src="{% url filemanager-get-type doc.mimetype %}" alt="" />
-                                {{ doc.file }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <!--/ Wiki Side Menu -->
-
+    <div class="row-fluid">
         <!-- Wiki page body -->
-        <div class="span9 wiki-pane">
-            <div class="wiki-pane-header">
-                <div class="pull-right pompadour-noprint">
-                    <p>
-                        <a id="open-diff"><i class="icon-list-alt"></i> {% trans "history" %}</a>
+        <div class="wiki-header">
+            <div class="pull-right pompadour-noprint">
+                <p>
+                    <a id="open-diff"><i class="icon-list-alt"></i> {% trans "history" %}</a>
 
-                        {% if wiki.urls.remove %}
-                            <a href="#modal-del-page" data-toggle="modal"><i class="icon-trash"></i> {% trans "remove" %}</a>
-                        {% endif %}
+                    {% if wiki.urls.remove %}
+                        <a href="#modal-del-page" data-toggle="modal"><i class="icon-trash"></i> {% trans "remove" %}</a>
+                    {% endif %}
 
-                        {% if wiki.urls.edit %}
-                            <a href="{{ wiki.urls.edit }}"><i class="icon-edit"></i> {% trans "edit" %}</a>
-                        {% endif %}
-                    </p>
-                </div>
-
-                <h1>{% filter title %}{% firstof wiki.meta.title.0 wiki.name wiki.obj.name %}{% endfilter %}</h1>
+                    {% if wiki.urls.edit %}
+                        <a href="{{ wiki.urls.edit }}"><i class="icon-edit"></i> {% trans "edit" %}</a>
+                    {% endif %}
+                </p>
             </div>
 
-            <div class="wiki-pane-body">
-                {% if wiki.locked %}
-                    <div class="alert">
-                        <span class="label label-warning">{% trans "Warning" %}</span>
-                        {% trans "This page is being edited by" %}
-                        <a href="mailto:{{ wiki.lock.user.email }}">{{ wiki.lock.user.first_name }} {{ wiki.lock.user.last_name }}</a>.
-                    </div>
-                {% endif %}
+            <h1>{% filter title %}{% firstof wiki.meta.title.0 wiki.name wiki.obj.name %}{% endfilter %}</h1>
+        </div>
 
-                <div class="wiki-pane-content">
-                    {% block wiki_body %}
-                    {% endblock %}
+        <div class="wiki-pane-body">
+            {% if wiki.locked %}
+                <div class="alert">
+                    <span class="label label-warning">{% trans "Warning" %}</span>
+                    {% trans "This page is being edited by" %}
+                    <a href="mailto:{{ wiki.lock.user.email }}">{{ wiki.lock.user.first_name }} {{ wiki.lock.user.last_name }}</a>.
                 </div>
+            {% endif %}
 
-                <div class="wiki-pane-diff hide">
-                    <h3>{% trans "Wiki history" %}</h3>
+            <div class="wiki-pane-content">
+                {% block wiki_body %}
+                {% endblock %}
+            </div>
 
-                    <table id="wiki-history" class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr><th>{% trans "Message" %}</th><th>{% trans "Author" %}</th><th>{% trans "Date" %}</th><th><i class="icon-eye-open"></i> {% trans "View" %}</tr>
-                        </thead>
-                        <tbody>
-                            {% for diff in wiki.history.diffs %}
-                                <tr>
-                                    <td>{{ diff.msg }}</td><td>{{ diff.author }}</td><td>{{ diff.date|naturaltime }}</td>
-                                    <td><a href="#" onclick="show_diff('{{ diff.parent_sha }}', '{{ diff.sha }}');"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="wiki-pane-diff hide">
+                <h3>{% trans "Wiki history" %}</h3>
 
-                    <p style="text-align: right;"><a href="#" class="btn" id="close-diff">{% trans "Close" %}</a></p>
+                <table id="wiki-history" class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr><th>{% trans "Message" %}</th><th>{% trans "Author" %}</th><th>{% trans "Date" %}</th><th><i class="icon-eye-open"></i> {% trans "View" %}</tr>
+                    </thead>
+                    <tbody>
+                        {% for diff in wiki.history.diffs %}
+                            <tr>
+                                <td>{{ diff.msg }}</td><td>{{ diff.author }}</td><td>{{ diff.date|naturaltime }}</td>
+                                <td><a href="#" onclick="show_diff('{{ diff.parent_sha }}', '{{ diff.sha }}');"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-                    <hr/>
+                <p style="text-align: right;"><a href="#" class="btn" id="close-diff">{% trans "Close" %}</a></p>
 
-                    <div id="diff"></div>
-                </div>
+                <hr/>
+
+                <div id="diff"></div>
             </div>
         </div>
         <!--/ Wiki page body -->

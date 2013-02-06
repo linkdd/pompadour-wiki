@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 
 from pompadour_wiki.apps.filemanager.models import Attachment
 from pompadour_wiki.apps.wiki.models import Wiki
-from pompadour_wiki.apps.utils.git_db import Repository
 from pompadour_wiki.apps.utils import urljoin
 
 import os
@@ -23,9 +22,7 @@ def remove_doc(request, wiki=None, files=None):
         w = Wiki.objects.get(slug=wiki)
     except Wiki.DoesNotExist:
         return dajax.json()
-
-    r = Repository(w.gitdir)
-        
+   
     os.environ['GIT_AUTHOR_NAME'] = u'{0} {1}'.format(request.user.first_name, request.user.last_name).encode('utf-8')
     os.environ['GIT_AUTHOR_EMAIL'] = request.user.email
     os.environ['USERNAME'] = str(request.user.username)
@@ -33,7 +30,7 @@ def remove_doc(request, wiki=None, files=None):
     for f in files:
         path = os.path.join('__media__', *f.split('/'))
 
-        r.rm_content(path)
+        w.repo.rm_content(path)
 
         # Remove attachments
         Attachment.objects.filter(file=f).delete()
@@ -58,14 +55,12 @@ def attach_doc(request, wiki=None, files=None, page=None):
     except Wiki.DoesNotExist:
         return dajax.json()
 
-    r = Repository(w.gitdir)
-
     for f in files:
         a = Attachment()
         a.wiki = w
         a.page = urljoin(wiki, page)
         a.file = f
-        a.mimetype = r.get_file_mimetype(os.path.join('__media__', *f.split('/')))
+        a.mimetype = w.repo.get_file_mimetype(os.path.join('__media__', *f.split('/')))
 
         a.save()
 

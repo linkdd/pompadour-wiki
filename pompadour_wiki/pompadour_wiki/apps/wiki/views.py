@@ -16,26 +16,22 @@ from pompadour_wiki.apps.wiki.forms import EditPageForm
 from pompadour_wiki.apps.lock.models import Lock
 from pompadour_wiki.apps.filemanager.models import Attachment
 
-from pompadour_wiki.apps.utils.git_db import Repository
 from pompadour_wiki.apps.markdown import pompadourlinks
 
 import markdown
 import datetime
 import os
 
-from collections import defaultdict
-
 @login_required
 @render_to('wiki/view.html')
 def view_page(request, wiki, path):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
     if not path:
         return {'REDIRECT': urljoin(request.path, settings.WIKI_INDEX)}
 
     # If path is a folder
-    if r.is_dir(path):
+    if w.repo.is_dir(path):
         if settings.WIKI_INDEX:
             return {'REDIRECT': urljoin(request.path, settings.WIKI_INDEX)}
 
@@ -49,7 +45,7 @@ def view_page(request, wiki, path):
     real_path = u'{0}.md'.format(path)
 
     # If the page doesn't exist, redirect user to an edit page
-    if not r.exists(real_path):
+    if not w.repo.exists(real_path):
         return {'REDIRECT': reverse('edit-page', args=[wiki, path])}
 
     # Generate markdown document
@@ -63,7 +59,7 @@ def view_page(request, wiki, path):
         safe_mode = True
     )
 
-    content, name, mimetype = r.get_content(real_path)
+    content, name, mimetype = w.repo.get_content(real_path)
     content = md.convert(content.decode('utf-8'))
 
     return {'wiki': {
@@ -71,7 +67,7 @@ def view_page(request, wiki, path):
         'path': real_path,
         'meta': md.Meta,
         'content': content,
-        'history': r.get_history(),
+        'history': w.repo.get_history(),
         'obj': w,
         'attachments': Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)),
         'urls': {
@@ -111,7 +107,6 @@ def edit_page(request, wiki, path):
         lock.save()
 
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
     name = ''
 
     # Save
@@ -127,7 +122,7 @@ def edit_page(request, wiki, path):
 
             commit = form.cleaned_data['comment'].encode('utf-8') or None
 
-            r.set_content(new_path, form.cleaned_data['content'], commit_msg=commit)
+            w.repo.set_content(new_path, form.cleaned_data['content'], commit_msg=commit)
 
             del(os.environ['GIT_AUTHOR_NAME'])
             del(os.environ['GIT_AUTHOR_EMAIL'])
@@ -137,8 +132,8 @@ def edit_page(request, wiki, path):
 
     # Edit
     else:
-        if not r.is_dir(path) and r.exists(u'{0}.md'.format(path)):
-            content, name, mimetype = r.get_content(u'{0}.md'.format(path))
+        if not w.repo.is_dir(path) and w.repo.exists(u'{0}.md'.format(path)):
+            content, name, mimetype = w.repo.get_content(u'{0}.md'.format(path))
             form = EditPageForm({'path': path, 'content': content, 'comment': None})
 
         else:
@@ -150,24 +145,22 @@ def edit_page(request, wiki, path):
         'locked': locked,
         'lock': lock,
         'obj': w,
-        'history': r.get_history(),
+        'history': w.repo.get_history(),
         'form': form,
         'attachments': Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)),
-        'path': path,
     }}
 
 @login_required
 @redirect_to(lambda wiki, path: reverse('view-page', args=[wiki, path]))
 def remove_page(request, wiki, path):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
     # Remove page
     os.environ['GIT_AUTHOR_NAME'] = u'{0} {1}'.format(request.user.first_name, request.user.last_name).encode('utf-8')
     os.environ['GIT_AUTHOR_EMAIL'] = request.user.email
     os.environ['USERNAME'] = str(request.user.username)
 
-    r.rm_content(u'{0}.md'.format(path))
+    w.repo.rm_content(u'{0}.md'.format(path))
 
     del(os.environ['GIT_AUTHOR_NAME'])
     del(os.environ['GIT_AUTHOR_EMAIL'])
@@ -182,43 +175,18 @@ def remove_page(request, wiki, path):
 @render_to('wiki/search.html')
 def search(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
-    results = []
+    pattern = ''
 
     if request.method == 'POST':
         pattern = request.POST['pattern']
 
-        # Do the search
-        out = r.git.grep('-i', '--cached', pattern)
-
-        for line in out.splitlines():
-            # Exclude __media__
-            if not line.startswith('__media__'):
-                sep = line.find(':')
-
-                url = line[:sep]
-                match = line[sep + 1:]
-
-                # Remove markdown extension
-                if url.endswith('.md'):
-                    url = url[:url.rfind('.md')]
-
-                # Append to the results
-                results.append ((url, match))
-
-        # Group results
-        groups = defaultdict(list)
-
-        for result in results:
-            groups[result[0]].append(result[1])
-
-        results = groups.items()
-        print results
+        results = w.repo.search(pattern)
 
     return {'wiki': {
-        'name': ugettext('Search'),
-        'history': r.get_history(),
+        'name': ugettext('Search: {0}').format(pattern),
+        'path': '',
+        'history': w.repo.get_history(),
         'obj': w,
         'results': results,
         'urls': {

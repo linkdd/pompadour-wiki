@@ -12,7 +12,7 @@ admin.autodiscover()
 from dajaxice.core import dajaxice_autodiscover
 dajaxice_autodiscover()
 
-from pompadour_wiki.views import home, test
+from pompadour_wiki.views import home, search
 
 urlpatterns = patterns('',
     url(r'^$', home, name='home'),
@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^wiki/', include('pompadour_wiki.apps.wiki.urls')),
     url(r'^files/', include('pompadour_wiki.apps.filemanager.urls')),
 
-    url(r'^test$', test, name='test'),
+    url(r'search$', search, name='search'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

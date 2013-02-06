@@ -1,23 +1,68 @@
 {% extends "base.html" %}
+{% load static %}
 {% load markup %}
+{% load humanize %}
+{% load i18n %}
 
 {% block content %}
     {% for wrow in wiki.array %}
         <div class="row-fluid">
             {% for w in wrow %}
-                <div class="span4 wiki">
-                    <div class="wiki-inner">
-                        <div class="wiki-header">
-                            <h4>
-                                <i class="icon-book"></i>
-                                <a href="{% url view-page w.slug "" %}">{{ w.name|title }}</a>
-                            </h4>
-                        </div>
+                <div class="span3 wiki-box">
+                    <div class="well">
+                        <h4>
+                            <i class="icon-book"></i>
+                            <a href="{% url view-page w.slug "" %}">{{ w.name|title }}</a>
+                        </h4>
 
-                        <div class="wiki-description">{{ w.description|markdown }}</div>
+                        <p>{{ w.description|markdown }}</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
+
+    <form id="form-search" method="post" action="{% url search %}">
+        {% csrf_token %}
+
+        <input class="input-block-level" type="text" name="search-query" placeholder="{% trans "Search" %}" {% if wiki.search %}value="{{ wiki.search }}"{% endif %}/>
+    </form>
+
+    {% if wiki.search %}
+        <h4>Résultats de recherche</h4>
+
+        <ul class="nav wiki-list">
+            {% for result in wiki.search_results %}
+                <li>
+                    <span class="label label-info">{{ result.wiki.name|title }}</span>
+                    <b><a href="{% url view-page result.wiki.slug result.file %}">{{ result.file|title }}</a></b>,
+                    <span class="wiki-info">{{ result.date|naturaltime }},
+                    par <a href="mailto:{{ result.author.email }}">{{ result.author.name }}</a></span>
+
+                    <a class="pull-right" data-toggle="collapse" href="#search_{{ result.id }}">
+                        <b class="caret"></b>
+                    </a>
+                </li>
+
+                <li id="search_{{ result.id }}" class="search-match collapse">
+<pre>{% for match in result.matches %}{{ match }}
+{% endfor %}</pre>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+    <h4>Les derniers documents modifiés</h4>
+
+    <ul class="nav wiki-list">
+        {% for edit in wiki.last_edits %}
+            <li>
+                <span class="label label-info">{{ edit.wiki.name|title }}</span>
+                {{ edit.message }},
+                <span class="wiki-info">{{ edit.date|naturaltime }},
+                par <a href="mailto:{{ edit.author.email }}">{{ edit.author.name }}</a></span>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

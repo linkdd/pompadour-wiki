@@ -2,6 +2,8 @@
 
 from django.db import models
 
+from pompadour_wiki.apps.utils.git_db import Repository
+
 class Wiki(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
@@ -10,6 +12,15 @@ class Wiki(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def repo(self):
+        return Repository(self.gitdir)
+
+    def create_repo(self):
+        """ Create repository """
+        
+        Repository.new(self.gitdir)
 
 class Document(models.Model):
     path = models.CharField(max_length=512)

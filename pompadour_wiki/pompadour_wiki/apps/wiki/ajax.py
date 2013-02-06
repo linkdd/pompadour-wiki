@@ -11,7 +11,6 @@ from dajaxice.decorators import dajaxice_register
 from dajax.core import Dajax
 
 from pompadour_wiki.apps.wiki.models import Wiki
-from pompadour_wiki.apps.utils.git_db import Repository
 from pompadour_wiki.apps.markdown import pompadourlinks
 from pompadour_wiki.apps.utils import logdebug
 
@@ -50,7 +49,7 @@ def add_wiki(request, dform=None):
         os.environ['GIT_AUTHOR_EMAIL'] = request.user.email
         os.environ['USERNAME'] = str(request.user.username)
 
-        r = Repository.new(wiki.gitdir)
+        wiki.create_repo()
 
         del(os.environ['GIT_AUTHOR_NAME'])
         del(os.environ['GIT_AUTHOR_EMAIL'])
@@ -76,8 +75,7 @@ def load_menu(request, slug=None, path=None):
         return dajax.json()
 
     # Get repository tree
-    r = Repository(wiki.gitdir)
-    tree = r.get_tree()
+    tree = wiki.repo.get_tree()
     node = tree['node']
 
     # Create template
@@ -162,9 +160,7 @@ def show_diff(request, sha=None, parent_sha=None, wiki=None):
     except Wiki.DoesNotExist:
         return dajax.json()
 
-    r = Repository(w.gitdir)
-
-    diff = r.git.diff(parent_sha, sha).decode('utf-8')
+    diff = wiki.repo.git.diff(parent_sha, sha).decode('utf-8')
 
     dajax.assign('#diff', 'innerHTML', highlight(diff, DiffLexer(), HtmlFormatter(cssclass='codehilite')))
 

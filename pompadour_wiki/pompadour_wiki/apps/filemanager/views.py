@@ -8,7 +8,6 @@ from django.utils.translation import ugettext
 from django.conf import settings
 
 from pompadour_wiki.apps.utils.decorators import render_to, redirect_to
-from pompadour_wiki.apps.utils.git_db import Repository
 from pompadour_wiki.apps.utils import breadcrumbify, urljoin, logdebug
 
 from pompadour_wiki.apps.wiki.models import Wiki
@@ -60,7 +59,6 @@ def get_mimetype_image(request, mimetype):
 @render_to('filemanager/index.html')
 def index(request, wiki, path):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
     filelist = []
 
@@ -71,9 +69,9 @@ def index(request, wiki, path):
         gitfolder = '__media__'
 
     # Check if the directory exists
-    if r.exists(gitfolder):
+    if w.repo.exists(gitfolder):
         # Get file list
-        files = r.get_folder_tree(gitfolder)
+        files = w.repo.get_folder_tree(gitfolder)
 
         # Append files to the list for the view
         for f in files:
@@ -95,7 +93,6 @@ def index(request, wiki, path):
 @login_required
 def view_document(request, wiki, path):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
     # Get the folder path inside git repository
     if path:
@@ -104,15 +101,15 @@ def view_document(request, wiki, path):
         gitpath = '__media__'
 
     # Check if the path exists
-    if not r.exists(gitpath):
+    if not w.repo.exists(gitpath):
         raise Http404
 
     # Check if the path point to a folder
-    if r.is_dir(gitpath):
+    if w.repo.is_dir(gitpath):
         return redirect('filemanager-index', wiki, path)
 
     # Return content
-    content = r.get_content(gitpath)
+    content = w.repo.get_content(gitpath)
 
     return HttpResponse(content[0], content_type=content[2])
 
@@ -120,7 +117,6 @@ def view_document(request, wiki, path):
 @redirect_to(lambda wiki, path: reverse('filemanager-index', args=[wiki, path]))
 def upload_document(request, wiki):
     w = get_object_or_404(Wiki, slug=wiki)
-    r = Repository(w.gitdir)
 
     if request.method != 'POST':
         raise Http404
@@ -137,7 +133,7 @@ def upload_document(request, wiki):
         os.environ['GIT_AUTHOR_EMAIL'] = request.user.email
         os.environ['USERNAME'] = str(request.user.username)
 
-        r.put_uploaded_file(os.path.join('__media__', path, doc.name), doc)
+        w.repo.put_uploaded_file(os.path.join('__media__', path, doc.name), doc)
 
         del(os.environ['GIT_AUTHOR_NAME'])
         del(os.environ['GIT_AUTHOR_EMAIL'])
