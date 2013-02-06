@@ -3,14 +3,10 @@
 {% load humanize %}
 {% load i18n %}
 
-{% block head_css %}
-    <link rel="stylesheet" href="{% static 'bootstrap/default/css/bootstrap-datatables.css' %}" />
-{% endblock %}
-
 {% block head_js %}
-    <script type="application/javascript" src="{% static 'jquery/jquery.dataTables.js' %}"></script>
-    <script type="application/javascript" src="{% static 'jquery/jquery.dataTables-bootstrap.js' %}"></script>
-    <script type="application/javascript" src="{% static 'pompadour-wiki/js/wiki-view.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/jquery/jquery.dataTables.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/jquery/jquery.dataTables-bootstrap.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/wiki-view.js' %}"></script>
     <script type="application/javascript">
         function show_diff(parent_sha, sha)
         {
@@ -25,8 +21,6 @@
 
         $(function()
         {
-            Dajaxice.pompadour_wiki.apps.wiki.load_menu(Dajax.process, {'slug': '{{ wiki.obj.slug }}', 'path': '{{ wiki.path }}'});
-
             $('#wiki-history').dataTable({
                 'bSort': false,
                 'sPaginationType': 'bootstrap'
@@ -88,7 +82,7 @@
                 </p>
             </div>
 
-            <h1>{% filter title %}{% firstof wiki.meta.title.0 wiki.name wiki.obj.name %}{% endfilter %}</h1>
+            <h1><a href="{% url view-page wiki.obj.slug wiki.path %}">{% filter title %}{% firstof wiki.meta.title.0 wiki.name wiki.obj.name %}{% endfilter %}</a></h1>
         </div>
 
         <div class="wiki-pane-body">

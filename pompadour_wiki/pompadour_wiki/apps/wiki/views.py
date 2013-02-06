@@ -64,7 +64,7 @@ def view_page(request, wiki, path):
 
     return {'wiki': {
         'name': os.path.splitext(name)[0],
-        'path': real_path,
+        'path': path,
         'meta': md.Meta,
         'content': content,
         'history': w.repo.get_history(),
@@ -170,27 +170,3 @@ def remove_page(request, wiki, path):
     Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)).delete()
 
     return wiki, ''
-
-@login_required
-@render_to('wiki/search.html')
-def search(request, wiki):
-    w = get_object_or_404(Wiki, slug=wiki)
-
-    pattern = ''
-
-    if request.method == 'POST':
-        pattern = request.POST['pattern']
-
-        results = w.repo.search(pattern)
-
-    return {'wiki': {
-        'name': ugettext('Search: {0}').format(pattern),
-        'path': '',
-        'history': w.repo.get_history(),
-        'obj': w,
-        'results': results,
-        'urls': {
-            'edit': os.path.join(request.path, 'edit'),
-            'remove': os.path.join(request.path, 'remove'),
-        },
-    }}

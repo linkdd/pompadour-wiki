@@ -7679,3 +7679,17 @@ hr {
     display: none;
   }
 }
+@media (min-width: 769px) {
+  .dataTables_length {
+    float: left;
+  }
+  .dataTables_filter {
+    text-align: right;
+  }
+  .dataTables_info {
+    float: left;
+  }
+  .dataTables_paginate {
+    text-align: right;
+  }
+}
