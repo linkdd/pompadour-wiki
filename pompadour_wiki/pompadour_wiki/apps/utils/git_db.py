@@ -197,7 +197,7 @@ class Repository(object):
 
     def get_file_history(self, path):
         """ Get history for a file """
-        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path.encode('utf-8')).splitlines()]
 
     def get_history(self, limit=None):
         """ Get repository's history """

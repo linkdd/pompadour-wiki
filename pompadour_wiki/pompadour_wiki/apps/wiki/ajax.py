@@ -161,13 +161,13 @@ def show_diff(request, sha=None, parent_sha=None, wiki=None, path=None):
         return dajax.json()
 
     if parent_sha and path:
-        diff = w.repo.git.diff(parent_sha, sha, '--', path).decode('utf-8')
+        diff = w.repo.git.diff(parent_sha, sha, '--', path.encode('utf-8')).decode('utf-8')
 
     elif parent_sha and not path:
         diff = w.repo.git.diff(parent_sha, sha).decode('utf-8')
 
     elif not parent_sha and path:
-        diff = w.repo.git.diff(sha, '--', path).decode('utf-8')
+        diff = w.repo.git.diff(sha, '--', path.encode('utf-8')).decode('utf-8')
 
     else:
         diff = w.repo.git.diff(sha).decode('utf-8')

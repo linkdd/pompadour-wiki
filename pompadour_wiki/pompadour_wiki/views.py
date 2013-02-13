@@ -77,7 +77,7 @@ def search(request):
                 print '\033[01mDEBUG:', wiki, filename, '\033[00m'
 
                 # Get informations from the file
-                last_commit = wiki.repo.get_file_history(u'{0}.md'.format(filename))[0]
+                last_commit = wiki.repo.get_file_history(u'{0}.md'.format(filename.decode('utf-8')).encode('utf-8'))[0]
 
                 # and append to the list
                 results.append({
