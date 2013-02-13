@@ -98,6 +98,23 @@
             <div class="wiki-pane-content">
                 {% block wiki_body %}
                 {% endblock %}
+
+                <hr/>
+
+                <ul class="nav nav-list">
+                    <li class="nav-header">{% trans "Attached documents" %}</li>
+
+                    {% for doc in wiki.attachments %}
+                        <li>
+                            <button class="close" onclick="Dajaxice.pompadour_wiki.apps.filemanager.remove_attach(Dajax.process, {'attachment': {{ doc.id }}});">&times;</button>
+
+                            <a href="{% url filemanager-view wiki.obj.slug doc.file %}">
+                                <img width="16" height="16" src="{% url filemanager-get-type doc.mimetype %}" alt="" />
+                                {{ doc.file }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
 
             <div class="wiki-pane-diff hide">

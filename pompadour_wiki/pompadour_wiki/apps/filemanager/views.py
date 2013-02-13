@@ -24,8 +24,8 @@ def get_mimetype_image(request, mimetype):
         # Get the filename of the mimetype image
         filename = '{0}.png'.format('-'.join(mimetype.split('/')))
 
-        path = os.path.join(settings.STATIC_ROOT, 'pompadour-wiki', 'img', 'icons', filename)
-        url = urljoin(settings.STATIC_URL, 'pompadour-wiki', 'img', 'icons', filename)
+        path = os.path.join(settings.STATIC_ROOT, 'img', 'icons', filename)
+        url = urljoin(settings.STATIC_URL, 'img', 'icons', filename)
 
         if os.path.exists(path):
             return redirect(url)

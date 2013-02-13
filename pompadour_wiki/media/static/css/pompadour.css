@@ -7667,6 +7667,28 @@ hr {
   -webkit-box-pack: start;
   -webkit-box-align: start;
 }
+.wiki-buttonbox {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.wiki-buttonbox .btn {
+  margin: 5px;
+}
+.filemanager-thumbnail {
+  max-width: 75px;
+}
+.filemanager-thumbnail p {
+  text-align: center;
+  word-wrap: break-word;
+}
+.filemanager-thumbnail .filemanager-file {
+  margin-top: -14px;
+}
+.filemanager-thumbnail .filemanager-file form.filemanager-selected {
+  display: inline;
+  position: relative;
+  bottom: -14px;
+}
 #edit-preview {
   border: 1px solid #cccccc;
   padding: 10px;

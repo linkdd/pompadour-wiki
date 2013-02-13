@@ -101,7 +101,7 @@
                     </select>
                 </p>
 
-                <p>Are you sure ?</p>
+                <p>{% trans "Are you sure ?" %}</p>
             </form>
         </div>
 
@@ -152,95 +152,71 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wiki-row row-fluid">
-        <!-- Wiki Side Menu -->
-        <div class="span2 wiki-menu">
-            <div class="sidebar-nav sidebar-nav-fixed pompadour-noprint">
-                <ul class="nav nav-list">
-                    <li class="nav-header">{% trans "Actions" %}</li>
-
-                    <li>
-                        <a href="{% url view-page wiki.obj.slug '' %}">
-                            <i class="icon-hand-right"></i>
-                            {% trans "Go back to wiki" %}
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#modal-upload-doc" data-toggle="modal">
-                            <i class="icon-upload"></i>
-                            {% trans "Upload a document" %}
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#" onclick="$('.filemanager-selected-checkbox').click(); return false;">
-                            <i class="icon-ok-circle"></i>
-                            {% trans "Select/Deselect all" %}
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#modal-remove-doc" data-toggle="modal">
-                            <i class="icon-trash"></i>
-                            {% trans "Remove" %}
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#modal-attach-doc" data-toggle="modal">
-                            <i class="icon-share"></i>
-                            {% trans "Attach to a page" %}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <!--/ Wiki Side Menu -->
-
+    <div class="row-fluid">
         <!-- Wiki page body -->
-        <div class="span10 wiki-pane">
-            <div class="wiki-pane-content">
-                <ul class="breadcrumb pompadour-noprint">
-                    {% for breadcrumb in wiki.breadcrumbs %}
-                        {% if forloop.first %}
-                            <li>
-                                <a href="{% url filemanager-index wiki.obj.slug "" %}">{{ wiki.obj.name|title }}</a>
-                                <span class="divider">/</span>
-                            </li>
-                        {% endif %}
-
-                        {% if not forloop.last %}
-                            <li>
-                                <a href="{% url filemanager-view wiki.obj.slug breadcrumb.1 %}">{{ breadcrumb.0|title }}</a>
-                                <span class="divider">/</span>
-                            </li>
-                        {% else %}
-                            <li class="active">{{ breadcrumb.0|title }}</li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-
-                <ul class="thumbnails">
-                    {% for f in wiki.files %}
-                        <li class="filemanager-thumbnail">
-                            <div class="filemanager-file">
-                                <form class="filemanager-selected">
-                                    <input class="filemanager-selected-checkbox" type="checkbox" />
-                                    <input class="filemanager-selected-filename" type="hidden" value="{{ f.name }}" />
-                                    <input class="filemanager-selected-url" type="hidden" value="{{ f.url }}" />
-                                </form>
-
-                                <a class="handle-contextual thumbnail" href="{% url filemanager-view wiki.obj.slug f.url %}">
-                                    <img src="{% url filemanager-get-type f.mimetype %}" alt="" />
-                                </a>
-                            </div>
-
-                            <p>{{ f.name }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
+        <div class="wiki-pane-content">
+            <div class="wiki-buttonbox">
+                <a class="btn" href="{% url view-page wiki.obj.slug '' %}">
+                    <i class="icon-hand-right"></i>
+                    {% trans "Go back to wiki" %}
+                </a>
+                <a class="btn" href="#modal-upload-doc" data-toggle="modal">
+                    <i class="icon-upload"></i>
+                    {% trans "Upload a document" %}
+                </a>
+                <a class="btn" href="#" onclick="$('.filemanager-selected-checkbox').click(); return false;">
+                    <i class="icon-ok-circle"></i>
+                    {% trans "Select/Deselect all" %}
+                </a>
+                <a class="btn" href="#modal-remove-doc" data-toggle="modal">
+                    <i class="icon-trash"></i>
+                    {% trans "Remove" %}
+                </a>
+                <a class="btn" href="#modal-attach-doc" data-toggle="modal">
+                    <i class="icon-share"></i>
+                    {% trans "Attach to a page" %}
+                </a>
             </div>
+
+            <ul class="breadcrumb pompadour-noprint">
+                {% for breadcrumb in wiki.breadcrumbs %}
+                    {% if forloop.first %}
+                        <li>
+                            <a href="{% url filemanager-index wiki.obj.slug "" %}">{{ wiki.obj.name|title }}</a>
+                            <span class="divider">/</span>
+                        </li>
+                    {% endif %}
+
+                    {% if not forloop.last %}
+                        <li>
+                            <a href="{% url filemanager-view wiki.obj.slug breadcrumb.1 %}">{{ breadcrumb.0|title }}</a>
+                            <span class="divider">/</span>
+                        </li>
+                    {% else %}
+                        <li class="active">{{ breadcrumb.0|title }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            <ul class="thumbnails">
+                {% for f in wiki.files %}
+                    <li class="filemanager-thumbnail">
+                        <div class="filemanager-file">
+                            <form class="filemanager-selected">
+                                <input class="filemanager-selected-checkbox" type="checkbox" />
+                                <input class="filemanager-selected-filename" type="hidden" value="{{ f.name }}" />
+                                <input class="filemanager-selected-url" type="hidden" value="{{ f.url }}" />
+                            </form>
+
+                            <a class="handle-contextual thumbnail" href="{% url filemanager-view wiki.obj.slug f.url %}">
+                                <img src="{% url filemanager-get-type f.mimetype %}" alt="" />
+                            </a>
+                        </div>
+
+                        <p>{{ f.name }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
         <!--/ Wiki page body -->
     </div>

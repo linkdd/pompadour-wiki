@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block head2_js %}
-    <script type="application/javascript" src="{% static 'jquery/jquery.markdown-editor.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/jquery/jquery.markdown-editor.js' %}"></script>
     <script type="application/javascript">
         $(function()
         {
@@ -44,18 +44,22 @@
                 <a class="btn btn-mini markup markup-picture"><i class="icon-picture"></i></a>
                 <a class="btn btn-mini markup markup-link"><i class="icon-globe"></i></a> |
 
-                <a class="btn btn-mini markup markup-list" title="List"><i class="icon-list"></i></a>
-                <a class="btn btn-mini markup markup-nlist" title="Numbered list"><i class="icon-list-alt"></i></a> |
+                <a class="btn btn-mini markup markup-list" title="{% trans 'List' %}"><i class="icon-list"></i></a>
+                <a class="btn btn-mini markup markup-nlist" title="{% trans 'Numbered list' %}"><i class="icon-list-alt"></i></a> |
 
-                <a class="btn btn-mini markup markup-quote" title="Block Quote"><i class="icon-comment"></i></a>
-                <a class="btn btn-mini markup markup-code" title="Block Code"><i class="icon-tasks"></i></a>
+                <a class="btn btn-mini markup markup-quote" title="{% trans 'Block Quote' %}"><i class="icon-comment"></i></a>
+                <a class="btn btn-mini markup markup-code" title="{% trans 'Block Code' %}"><i class="icon-tasks"></i></a>
             </div>
         </div>
 
         <div class="control-group">
             <div class="control-label">
                 <a class="btn" onclick="Dajaxice.pompadour_wiki.apps.wiki.edit_preview(Dajax.process, {'dform': $('#form-edit').serializeObject(), 'wiki': '{{ wiki.obj.slug }}'});">
-                    <i class="icon-eye-open"></i> Preview
+                    <i class="icon-eye-open"></i> {% trans 'Preview' %}
+                </a>
+                <hr/>
+                <a>
+                    <i class="icon-upload"></i> {% trans 'Attach a document' %}
                 </a>
             </div>
 
@@ -76,6 +80,6 @@
     </form>
 
     <div id="edit-preview">
-        Preview
+        {% trans 'Preview' %}
     </div>
 {% endblock %}
