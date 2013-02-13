@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
+from django.template.defaultfilters import slugify
+
 from pompadour_wiki.apps.utils.decorators import render_to
 
 from pompadour_wiki.apps.wiki.models import Wiki
@@ -79,7 +81,7 @@ def search(request):
 
                 # and append to the list
                 results.append({
-                    'id': last_commit.hexsha,
+                    'id': '{0}_{1}'.format(last_commit.hexsha, slugify(filename)),
                     'wiki': wiki,
                     'file': filename,
                     'matches': matches,
