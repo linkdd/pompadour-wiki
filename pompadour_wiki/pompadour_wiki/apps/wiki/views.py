@@ -67,7 +67,7 @@ def view_page(request, wiki, path):
         'path': path,
         'meta': md.Meta,
         'content': content,
-        'history': w.repo.get_file_history(real_path),
+        'history': w.repo.get_file_diffs(real_path),
         'obj': w,
         'attachments': Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)),
         'urls': {
@@ -145,7 +145,7 @@ def edit_page(request, wiki, path):
         'locked': locked,
         'lock': lock,
         'obj': w,
-        'history': w.repo.get_history(),
+        'history': w.repo.get_file_diffs(path),
         'form': form,
         'attachments': Attachment.objects.filter(wiki=w, page=os.path.join(wiki, path)),
     }}

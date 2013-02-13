@@ -197,11 +197,23 @@ class Repository(object):
 
     def get_file_history(self, path):
         """ Get history for a file """
+        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+
+    def get_history(self, limit=None):
+        """ Get repository's history """
+
+        if limit:
+            return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('-{0}'.format(limit)).splitlines()]
+
+        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log().splitlines()]
+
+    def get_file_diffs(self, path):
+        """ Get diffs for a file """
 
         diffs = {'diffs': []}
 
         if self.exists(path):
-            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+            commits = self.get_file_history(path)
 
             for c in commits:
                 diff = {
@@ -219,13 +231,10 @@ class Repository(object):
 
         return diffs
 
-    def get_history(self, limit=None):
-        """ Return repository's history. """
+    def get_diffs(self, limit=None):
+        """ Return repository's diffs. """
 
-        if limit:
-            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('-{0}'.format(limit)).splitlines()]
-        else:
-            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log().splitlines()]
+        commits = self.get_history(limit=limit)
 
         diffs = {'diffs': []}
 
