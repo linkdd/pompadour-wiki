@@ -8,11 +8,12 @@
     <script type="application/javascript" src="{% static 'js/jquery/jquery.dataTables-bootstrap.js' %}"></script>
     <script type="application/javascript" src="{% static 'js/wiki-view.js' %}"></script>
     <script type="application/javascript">
-        function show_diff(parent_sha, sha)
+        function show_diff(parent_sha, sha, path)
         {
             Dajaxice.pompadour_wiki.apps.wiki.show_diff(Dajax.process, {
                 'sha': sha,
                 'parent_sha': parent_sha,
+                'path': path,
                 'wiki': '{{ wiki.obj.slug }}'
             });
 
@@ -110,7 +111,7 @@
                         {% for diff in wiki.history.diffs %}
                             <tr>
                                 <td>{{ diff.msg }}</td><td>{{ diff.author }}</td><td>{{ diff.date|naturaltime }}</td>
-                                <td><a href="#" onclick="show_diff('{{ diff.parent_sha }}', '{{ diff.sha }}');"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
+                                <td><a href="#" onclick="show_diff('{{ diff.parent_sha }}', '{{ diff.sha }}', '{{ diff.path }}');"><i class="icon-eye-open"></i> {% trans "View" %}</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -148,10 +148,10 @@ def edit_preview(request, dform=None, wiki=None):
     return dajax.json()
 
 @dajaxice_register
-def show_diff(request, sha=None, parent_sha=None, wiki=None):
+def show_diff(request, sha=None, parent_sha=None, wiki=None, path=None):
     dajax = Dajax()
 
-    if not sha or not parent_sha or not wiki:
+    if not sha or not wiki:
         return dajax.json()
 
     # Retrieve git repository
@@ -160,7 +160,17 @@ def show_diff(request, sha=None, parent_sha=None, wiki=None):
     except Wiki.DoesNotExist:
         return dajax.json()
 
-    diff = wiki.repo.git.diff(parent_sha, sha).decode('utf-8')
+    if parent_sha and path:
+        diff = w.repo.git.diff(parent_sha, sha, '--', path).decode('utf-8')
+
+    elif parent_sha and not path:
+        diff = w.repo.git.diff(parent_sha, sha).decode('utf-8')
+
+    elif not parent_sha and path:
+        diff = w.repo.git.diff(sha, '--', path).decode('utf-8')
+
+    else:
+        diff = w.repo.git.diff(sha).decode('utf-8')
 
     dajax.assign('#diff', 'innerHTML', highlight(diff, DiffLexer(), HtmlFormatter(cssclass='codehilite')))
 

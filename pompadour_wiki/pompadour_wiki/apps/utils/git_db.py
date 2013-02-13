@@ -198,35 +198,49 @@ class Repository(object):
     def get_file_history(self, path):
         """ Get history for a file """
 
-        if not self.exists(path):
-            return []
+        diffs = {'diffs': []}
 
-        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+        if self.exists(path):
+            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('--', path).splitlines()]
+
+            for c in commits:
+                diff = {
+                    'msg': c.message,
+                    'date': datetime.fromtimestamp(c.authored_date),
+                    'author': c.author,
+                    'sha': c.hexsha,
+                    'path': path,
+                }
+
+                if c.parents:
+                    diff['parent_sha'] = c.parents[0].hexsha
+
+                diffs['diffs'].append(diff)
+
+        return diffs
 
     def get_history(self, limit=None):
         """ Return repository's history. """
 
         if limit:
-            return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('-{0}'.format(10)).splitlines()]
-        
-        return [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log().splitlines()]
+            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log('-{0}'.format(limit)).splitlines()]
+        else:
+            commits = [self.repo.commit(line.split(' ', 1)[0]) for line in self.repo.git.log().splitlines()]
 
         diffs = {'diffs': []}
 
-        c = self.repo.head.commit
-
-        while c.parents:
+        for c in commits:
             diff = {
                 'msg': c.message,
                 'date': datetime.fromtimestamp(c.authored_date),
                 'author': c.author,
-                'parent_sha': c.parents[0].hexsha,
                 'sha': c.hexsha
             }
 
-            diffs['diffs'].append(diff)
+            if c.parents:
+                diff['parent_sha'] = c.parents[0].hexsha
 
-            c = c.parents[0]
+            diffs['diffs'].append(diff)
 
         return diffs
 
